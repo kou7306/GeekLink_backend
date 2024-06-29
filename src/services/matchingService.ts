@@ -1,4 +1,4 @@
-import { supabase } from "../config/db";
+import prisma from "../config/prisma";
 import { Like } from "../models/likeModel";
 import { CreateMatch } from "../models/matchModel";
 
@@ -13,20 +13,23 @@ export const matchingCheck = async (user_id: string, other_user_id: string): Pro
 };
 
 const filterLikes = async (user_id: string, other_user_id: string): Promise<[Like[], number]> => {
-  const { data: likes, error } = await supabase.from("likes").select("*").eq("user_id", user_id);
+  try {
+    const likes = await prisma.like.findMany({
+      where: {
+        user_id: user_id,
+        liked_user_id: other_user_id,
+      },
+    });
 
-  if (error) {
+    if (likes.length === 0) {
+      return [[], 0];
+    }
+
+    return [likes, likes[0].id];
+  } catch (error: any) {
     console.error("Error fetching likes:", error);
     return [[], 0];
   }
-
-  const filteredLikes = likes.filter((like: Like) => like.liked_user_id === other_user_id);
-
-  if (filteredLikes.length === 0) {
-    return [[], 0];
-  }
-
-  return [filteredLikes, filteredLikes[0].id];
 };
 
 const createMatching = async (user1_id: string, user2_id: string): Promise<void> => {
@@ -36,23 +39,29 @@ const createMatching = async (user1_id: string, user2_id: string): Promise<void>
     created_at: new Date(),
   };
 
-  const { error } = await supabase.from("matches").insert(match);
-
-  if (error) {
+  try {
+    await prisma.match.create({
+      data: match,
+    });
+  } catch (error: any) {
     console.error("Error creating match:", error);
   }
 };
 
 const deleteLike = async (row_id: number, other_row_id: number): Promise<void> => {
-  const { error: error1 } = await supabase.from("likes").delete().eq("id", row_id);
-
-  if (error1) {
-    console.error("Error deleting like:", error1);
+  try {
+    await prisma.like.delete({
+      where: { id: row_id },
+    });
+  } catch (error) {
+    console.error("Error deleting like:", error);
   }
 
-  const { error: error2 } = await supabase.from("likes").delete().eq("id", other_row_id);
-
-  if (error2) {
-    console.error("Error deleting like:", error2);
+  try {
+    await prisma.like.delete({
+      where: { id: other_row_id },
+    });
+  } catch (error: any) {
+    console.error("Error deleting like:", error);
   }
 };

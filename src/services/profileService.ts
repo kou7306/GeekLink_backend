@@ -1,33 +1,27 @@
-import { supabase } from "../config/db";
-import { User } from "../models/userModel";
+import { User as PrismaUser } from "@prisma/client";
+import prisma from "../config/prisma";
 
-export const updateProfileService = async (user_id: string, profileData: User) => {
-  console.log("user_id", user_id);
-  console.log("profileData", profileData);
+export const updateProfileService = async (user_id: string, profileData: PrismaUser) => {
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { user_id: user_id },
+      data: profileData,
+    });
 
-  const { data, error } = await supabase
-    .from("users")
-    .update(profileData)
-    .eq("user_id", user_id)
-    .select("*")
-
-  console.log("user", data);
-
-  if (error) {
-    console.error("error_code", error.code);
-    console.error("error_hint", error.hint);
-    console.error("error_message", error.message);
-    console.error("error_details", error.details);
+    return updatedUser;
+  } catch (error: any) {
     throw new Error(error.message);
   }
-
-  return data;
 };
 
-export const getProfileService = async (user_id: string): Promise<User | null> => {
-  const { data: user, error } = await supabase.from("users").select("*").eq("user_id", user_id).single();
+export const getProfileService = async (user_id: string): Promise<PrismaUser | null> => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { user_id: user_id },
+    });
 
-  if (error) throw error;
-
-  return user;
+    return user;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 };

@@ -1,25 +1,28 @@
-import { supabase } from "../config/db";
-import { UserRandomResponse } from "../models/userModel";
+import { User as PrismaUser } from "@prisma/client";
+import prisma from "../config/prisma";
 
-export const getRandomMatchesService = async (user_id: string): Promise<UserRandomResponse[]> => {
-  const { data: users, error } = await supabase
-    .from("users")
-    .select("*")
-    .neq("user_id", user_id);
+export const getRandomMatchesService = async (user_id: string): Promise<PrismaUser[]> => {
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        user_id: {
+          not: user_id,
+        },
+      },
+    });
 
-  if (error) {
+    const users_num = Math.min(users.length, 5);
+    const randomUsers: PrismaUser[] = [];
+
+    for (let i = 0; i < users_num; i++) {
+      const index = Math.floor(Math.random() * users.length);
+      randomUsers.push(users[index] as PrismaUser);
+      users.splice(index, 1);
+    }
+
+    return randomUsers;
+  } catch (error: any) {
     console.error("Error fetching users:", error);
     throw new Error(error.message);
   }
-
-  const users_num = Math.min(users.length, 5);
-  const randomUsers: UserRandomResponse[] = [];
-
-  for (let i = 0; i < users_num; i++) {
-    const index = Math.floor(Math.random() * users.length);
-    randomUsers.push(users[index]);
-    users.splice(index, 1);
-  }
-
-  return randomUsers;
 };
