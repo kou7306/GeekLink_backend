@@ -1,7 +1,7 @@
 import { Message } from "../models/messageModel";
 import { Client } from "./client";
 import WebSocket from "ws";
-import { supabase } from "../config/db";
+import { saveMessage } from "../services/messageService";
 
 export class Hub {
   clients: Map<Client, string>;
@@ -29,24 +29,16 @@ export class Hub {
   }
 
   async broadcastToAllClient(msg: Message) {
-    const message = {
-      sender_id: msg.sender_id,
-      receiver_id: msg.receiver_id,
-      content: msg.content,
-      created_at: msg.created_at,
-      conversation_id: msg.conversation_id,
-    };
-
-    const { error } = await supabase.from("messages").insert(message);
-
-    if (error) {
-      console.error("Error inserting message into database:", error);
+    try {
+      await saveMessage(msg);
+    } catch (error) {
+      console.error("Error saving message:", error);
       return;
     }
 
     this.clients.forEach((conversationId, client) => {
       if (conversationId === msg.conversation_id) {
-        client.ws.send(JSON.stringify(message));
+        client.ws.send(JSON.stringify(msg));
       }
     });
   }

@@ -1,4 +1,4 @@
-import { supabase } from "../config/db";
+import prisma from "../config/prisma";
 import { v4 as uuidv4 } from "uuid";
 import { Like } from "../models/likeModel";
 import { matchingCheck } from "./matchingService";
@@ -15,10 +15,12 @@ export const createLikeService = async (uuid: string, ids: string[]): Promise<vo
       created_at: new Date(),
     };
 
-    const { error } = await supabase.from("likes").insert(row);
-
-    if (error) {
-      console.error(error);
+    try {
+      await prisma.like.create({
+        data: row,
+      });
+    } catch (error: any) {
+      console.error("Error creating like:", error);
       continue;
     }
 

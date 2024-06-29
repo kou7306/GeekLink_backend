@@ -11,14 +11,14 @@ generator client {
 model User {
   user_id          String   @id @default(uuid())
   created_at       DateTime @default(now())
-  name             String?
-  sex              String?
-  age              String?
-  place            String?
+  name             String
+  sex              String
+  age              String
+  place            String
   top_teches       String[]
   teches           String[]
   hobby            String?
-  occupation       String?
+  occupation       String
   affiliation      String?
   qualification    String[]
   editor           String?
