@@ -18,10 +18,13 @@ const corsOptions = {
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
-}
+};
 
 app.use(cors(corsOptions));
-
+// ルートに対するハンドラを追加
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
