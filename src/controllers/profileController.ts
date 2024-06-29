@@ -1,12 +1,17 @@
 import { Request, Response } from "express";
-import { getProfileService, updateProfileService } from "../services/profileService";
+import {
+  getProfileService,
+  updateProfileService,
+} from "../services/profileService";
 
 export const updateProfile = async (req: Request, res: Response) => {
   try {
     const { user_id, ...profileData } = req.body;
     const updatedProfile = await updateProfileService(user_id, profileData);
 
-    res.status(200).json({ message: "Profile updated successfully", data: updatedProfile });
+    res
+      .status(200)
+      .json({ message: "Profile updated successfully", data: updatedProfile });
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({ error: "Internal Server Error" });
