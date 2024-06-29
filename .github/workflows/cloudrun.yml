@@ -17,6 +17,8 @@ env:
   IMAGE: gcr.io/${{ secrets.PROJECT_ID }}/geeklink:${{ github.sha }}
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  DIRECT_URL: ${{ secrets.DIRECT_URL }}
 
 jobs:
   build-and-deploy:
@@ -52,4 +54,4 @@ jobs:
             --platform managed \
             --region ${{ env.GCP_REGION }} \
             --allow-unauthenticated \
-            --set-env-vars SUPABASE_URL=${{ env.SUPABASE_URL }},SUPABASE_KEY=${{ env.SUPABASE_KEY }}
+            --set-env-vars SUPABASE_URL=${{ env.SUPABASE_URL }},SUPABASE_KEY=${{ env.SUPABASE_KEY }}, DATABASE_URL=${{ env.DATABASE_URL }}, DIRECT_URL=${{ env.DIRECT_URL }} \

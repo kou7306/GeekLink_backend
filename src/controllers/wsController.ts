@@ -1,22 +1,39 @@
 import { Request, Response } from "express";
-import WebSocket from "ws";
+import { Server as SocketIOServer } from "socket.io";
 import { handleWebSocketConnection } from "../services/wsService";
 
-export const connectWebSocket = (req: Request, res: Response) => {
-  const { conversationId } = req.query;
+export const connectWebSocket = (
+  req: Request,
+  res: Response,
+  io: SocketIOServer
+) => {
+  const { roomId } = req.query;
 
-  if (typeof conversationId !== "string") {
+  if (typeof roomId !== "string") {
     return res.status(400).json({ error: "Invalid conversation ID" });
   }
 
-  const wsServer = new WebSocket.Server({ noServer: true });
-  wsServer.handleUpgrade(req, req.socket, Buffer.alloc(0), (ws) => {
-    handleWebSocketConnection(ws, conversationId);
-  });
+  const room = io.of("/room");
 
-  wsServer.on("connection", (ws) => {
-    ws.send("WebSocket connection established");
-  });
+  room.on("connection", (socket) => {
+    console.log("A user connected to /room");
 
+    socket.on("joinRoom", (roomId: string) => {
+      if (typeof roomId !== "string") {
+        return socket.emit("error", { message: "Invalid room ID" });
+      }
+
+      socket.join(roomId);
+      console.log(`User joined room: ${roomId}`);
+    });
+
+    socket.on("message", (roomId: string, message: string) => {
+      room.to(roomId).emit("message", message);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("A user disconnected from /room");
+    });
+  });
   res.status(200).json({ message: "WebSocket connection established" });
 };
