@@ -14,7 +14,7 @@ export const exchangeCodeForSessionService = async (
   // セッション情報が含まれている場合、それを使ってユーザー情報を取得または作成することができます
   const { user } = data;
   if (user) {
-    await prisma.user.upsert({
+    await prisma.users.upsert({
       where: { user_id: user.id },
       update: {
         name: user.user_metadata?.name || "Unknown",
