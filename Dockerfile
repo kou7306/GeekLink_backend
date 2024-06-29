@@ -13,6 +13,8 @@ RUN npm install
 # ソースコードをコピー
 COPY . .
 
+RUN npx prisma generate
+
 # TypeScriptをコンパイル
 RUN npm run build
 
