@@ -1,9 +1,9 @@
-import { User as PrismaUser } from "@prisma/client";
+import { Users as PrismaUser } from "@prisma/client";
 import prisma from "../config/prisma";
 
 export const updateProfileService = async (user_id: string, profileData: PrismaUser) => {
   try {
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await prisma.users.update({
       where: { user_id: user_id },
       data: profileData,
     });
@@ -16,7 +16,7 @@ export const updateProfileService = async (user_id: string, profileData: PrismaU
 
 export const getProfileService = async (user_id: string): Promise<PrismaUser | null> => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { user_id: user_id },
     });
 

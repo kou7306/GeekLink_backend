@@ -1,10 +1,10 @@
 import prisma from "../config/prisma";
-import { User, Message, Match } from "@prisma/client";
+import { Users, Message, Match } from "@prisma/client";
 // import { User } from "../models/userModel";
 // import { Match } from "../models/matchModel";
 // import { Message } from "../models/messageModel";
 
-export const getMatchingUsersService = async (uuid: string): Promise<User[]> => {
+export const getMatchingUsersService = async (uuid: string): Promise<Users[]> => {
   // MatchテーブルからマッチしたユーザーのIDを取得
   const matches = await prisma.match.findMany({
     where: {
@@ -17,7 +17,7 @@ export const getMatchingUsersService = async (uuid: string): Promise<User[]> => 
   );
 
   // Userテーブルからマッチしたユーザーの情報を取得
-  const matchedUsers: User[] = await prisma.user.findMany({
+  const matchedUsers: Users[] = await prisma.users.findMany({
     where: {
       user_id: {
         in: matchedUserIds,
@@ -41,7 +41,7 @@ export const getMessagesService = async (conversationId: string): Promise<Messag
 
 export const checkUserExistsService = async (user_id: string): Promise<boolean> => {
   // 特定のユーザーIDが存在するかを確認
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: {
       user_id: user_id,
     },
