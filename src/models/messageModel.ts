@@ -4,5 +4,5 @@ export type Message = {
   receiver_id: string;
   content: string;
   created_at: string;
-  conversation_id: string;
+  room_id: string;
 };

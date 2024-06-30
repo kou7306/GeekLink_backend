@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import {
   checkUserExistsService,
   getMatchingUsersService,
-  getMessagesService,
+  getMessagesAndRoomService,
 } from "../services/userService";
 
 export const getMatchingUsers = async (req: Request, res: Response) => {
@@ -16,10 +16,13 @@ export const getMatchingUsers = async (req: Request, res: Response) => {
 };
 
 export const getMessages = async (req: Request, res: Response) => {
-  const { conversationId } = req.params;
+  const { uuid, partnerId } = req.query as { uuid: string; partnerId: string };
   try {
-    const messages = await getMessagesService(conversationId);
-    res.status(200).json(messages);
+    const { roomId, messages } = await getMessagesAndRoomService(
+      uuid,
+      partnerId
+    );
+    res.status(200).json({ roomId: roomId, messages: messages });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
