@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { createLike } from "../controllers/likeController";
+import { RandomCreateLike, OneCreateLike } from "../controllers/likeController";
 
 const router = Router();
 
-router.post("/create-like", createLike);
+router.post("/create-like-random", RandomCreateLike);
+router.post("/create-like-one", OneCreateLike)
 
 export default router;
