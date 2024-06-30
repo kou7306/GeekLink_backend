@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { connectWebSocket } from "../controllers/wsController";
+import { chatWebSocket } from "../controllers/wsController";
 
 const router = Router();
 
-router.get("/connect", connectWebSocket);
+router.get("/chat", chatWebSocket);
 
 export default router;

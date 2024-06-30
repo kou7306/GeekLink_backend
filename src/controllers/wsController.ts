@@ -1,22 +1,24 @@
-import { Request, Response } from "express";
-import WebSocket from "ws";
-import { handleWebSocketConnection } from "../services/wsService";
+import { Server, Socket } from "socket.io";
+import { io } from "../app";
+import { saveMessage } from "../services/messageService";
+import { Message } from "../models/messageModel";
 
-export const connectWebSocket = (req: Request, res: Response) => {
-  const { roomId } = req.query;
+export function handleSocketConnection(socket: Socket) {
+  console.log(`A user connected with socket id ${socket.id}`);
 
-  if (typeof roomId !== "string") {
-    return res.status(400).json({ error: "Invalid room ID" });
-  }
-
-  const wsServer = new WebSocket.Server({ noServer: true });
-  wsServer.handleUpgrade(req, req.socket, Buffer.alloc(0), (ws) => {
-    handleWebSocketConnection(ws, roomId);
+  socket.on("joinRoom", (roomId: string) => {
+    console.log(`User ${socket.id} joined room: ${roomId}`);
+    socket.join(roomId); // ルームに参加
   });
 
-  wsServer.on("connection", (ws) => {
-    ws.send("WebSocket connection established");
+  socket.on("message", (message: Message) => {
+    console.log(`Received message from ${socket.id} : ${message}`);
+    saveMessage(message); // メッセージを保存
+    // ルームに参加している全てのユーザーをログで出力する
+    io.of("/ws/chat").to(message.room_id).emit("message", message); // 同じルームのクライアントにメッセージを送信
   });
 
-  res.status(200).json({ message: "WebSocket connection established" });
-};
+  socket.on("disconnect", () => {
+    console.log(`User ${socket.id} disconnected`);
+  });
+}

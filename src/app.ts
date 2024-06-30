@@ -7,12 +7,25 @@ import profileRoutes from "./routes/profileRoutes";
 import likeRoutes from "./routes/likeRoutes";
 import matchRoutes from "./routes/matchRoutes";
 import wsRoutes from "./routes/wsRoutes";
+import http from "http";
+import { Server as SocketIOServer, Socket } from "socket.io";
+import { handleSocketConnection } from "./controllers/wsController";
 
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  },
+});
 app.use(express.json());
-
+io.on("connection", (socket) => {
+  console.log(socket.id);
+});
 // CORSの設定
 const corsOptions = {
   origin: "*",
@@ -30,6 +43,5 @@ app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
 app.use("/likes", likeRoutes);
 app.use("/match", matchRoutes);
-app.use("/ws", wsRoutes);
-
-export default app;
+io.of("/ws/chat").on("connection", handleSocketConnection);
+export { app, server, io };
