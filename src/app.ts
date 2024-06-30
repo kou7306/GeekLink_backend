@@ -6,7 +6,6 @@ import authRoutes from "./routes/authRoutes";
 import profileRoutes from "./routes/profileRoutes";
 import likeRoutes from "./routes/likeRoutes";
 import matchRoutes from "./routes/matchRoutes";
-import wsRoutes from "./routes/wsRoutes";
 import http from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import { handleSocketConnection } from "./controllers/wsController";
