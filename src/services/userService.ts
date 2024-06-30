@@ -4,7 +4,9 @@ import { Users, Message, Match } from "@prisma/client";
 // import { Match } from "../models/matchModel";
 // import { Message } from "../models/messageModel";
 
-export const getMatchingUsersService = async (uuid: string): Promise<Users[]> => {
+export const getMatchingUsersService = async (
+  uuid: string
+): Promise<Users[]> => {
   // MatchテーブルからマッチしたユーザーのIDを取得
   const matches = await prisma.match.findMany({
     where: {
@@ -28,18 +30,38 @@ export const getMatchingUsersService = async (uuid: string): Promise<Users[]> =>
   return matchedUsers;
 };
 
-export const getMessagesService = async (conversationId: string): Promise<Message[]> => {
-  // Messageテーブルから特定の会話IDに関連するメッセージを取得
-  const messages: Message[] = await prisma.message.findMany({
+export const getMessagesAndRoomService = async (
+  uuid: string,
+  partnerId: string
+): Promise<{ roomId: string; messages: Message[] }> => {
+  // ルームIDを取得
+  const room = await prisma.match.findFirst({
     where: {
-      conversation_id: conversationId,
+      OR: [
+        { AND: [{ user1_id: uuid }, { user2_id: partnerId }] },
+        { AND: [{ user1_id: partnerId }, { user2_id: uuid }] },
+      ],
+    },
+    select: {
+      room_id: true,
     },
   });
 
-  return messages;
+  const roomId = room?.room_id || "";
+
+  // Messageテーブルから関連するメッセージを取得
+  const messages: Message[] = await prisma.message.findMany({
+    where: {
+      room_id: roomId,
+    },
+  });
+
+  return { roomId, messages };
 };
 
-export const checkUserExistsService = async (user_id: string): Promise<boolean> => {
+export const checkUserExistsService = async (
+  user_id: string
+): Promise<boolean> => {
   // 特定のユーザーIDが存在するかを確認
   const user = await prisma.users.findUnique({
     where: {
