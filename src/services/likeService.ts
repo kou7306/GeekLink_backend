@@ -1,14 +1,15 @@
 import prisma from "../config/prisma";
-import { v4 as uuidv4 } from "uuid";
 import { Like } from "../models/likeModel";
 import { matchingCheck } from "./matchingService";
 
-// ランダムマッチでいいねを送られた場合
-export const RandomCreateLikeService = async (uuid: string, ids: string[]): Promise<void> => {
-  const user_id = uuidv4();
+export const createLikeService = async (
+  uuid: string,
+  IDs: string[]
+): Promise<void> => {
+  const user_id = uuid;
 
-  for (const id of ids) {
-    const other_user_id = uuidv4();
+  for (const id of IDs) {
+    const other_user_id = id;
 
     const row: Like = {
       user_id,
