@@ -32,7 +32,7 @@ export const createLikeService = async (
 
 
 // ユーザーページからいいねを送られた場合
-export const OneCreateLikeService = async (uuid: string, ID: string): Promise<void> => {
+export const OnecreateLikeService = async (uuid: string, ID: string): Promise<void> => {
   const user_id = uuid;
   const other_user_id = ID;
 
