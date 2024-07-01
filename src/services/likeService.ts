@@ -29,3 +29,26 @@ export const createLikeService = async (
     await matchingCheck(user_id, other_user_id);
   }
 };
+
+
+// ユーザーページからいいねを送られた場合
+export const OnecreateLikeService = async (uuid: string, ID: string): Promise<void> => {
+  const user_id = uuid;
+  const other_user_id = ID;
+
+  const row: Like = {
+    user_id: user_id,
+    liked_user_id: other_user_id,
+    created_at: new Date(),
+  };
+
+  try {
+    await prisma.like.create({
+      data: row,
+    });
+  } catch (error: any) {
+    console.error("Error creating like:", error);
+  }
+
+  await matchingCheck(user_id, other_user_id);
+};
