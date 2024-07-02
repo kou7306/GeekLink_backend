@@ -44,14 +44,15 @@ model Message {
   sender_id       String
   receiver_id     String
   content         String
-  conversation_id String
+  room_id         String
 }
 
 model Match {
-  id        Int      @id @default(autoincrement())
-  created_at DateTime @default(now())
-  user1_id  String
-  user2_id  String
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  user1_id   String
+  user2_id   String
+  room_id    String    @default(dbgenerated("gen_random_uuid()"))
 }
 
 model Like {
