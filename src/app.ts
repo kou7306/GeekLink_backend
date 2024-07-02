@@ -16,8 +16,8 @@ app.use(express.json());
 // CORSの設定
 const corsOptions = {
   origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ["*"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
 };
 
 app.use(cors(corsOptions));
