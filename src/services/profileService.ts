@@ -25,3 +25,18 @@ export const getProfileService = async (user_id: string): Promise<PrismaUser | n
     throw new Error(error.message);
   }
 };
+
+export const LikeStatusCheck = async (user_id: string, other_user_id: string) => {
+  try {
+    const result = await prisma.like.findFirst({
+      where: {
+        user_id: user_id,
+        liked_user_id: other_user_id,
+      },
+    });
+
+    return result !== null;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
