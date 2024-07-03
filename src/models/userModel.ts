@@ -1,10 +1,11 @@
 export type User = {
   user_id: string;
   created_at: Date;
-  name?: string;
-  sex?: string;
-  age?: string;
-  place?: string;
+  name: string;
+  sex: string;
+  age: string;
+  place: string;
+  top_tech: string;
   top_teches: string[];
   teches: string[];
   hobby?: string;

@@ -16,6 +16,7 @@ model Users {
   sex              String
   age              String
   place            String
+  top_tech         String
   top_teches       String[]
   teches           String[]
   hobby            String?

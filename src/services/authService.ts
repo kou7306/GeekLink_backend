@@ -26,6 +26,7 @@ export const exchangeCodeForSessionService = async (
         sex: user.user_metadata?.sex || "Unknown",
         age: user.user_metadata?.age || "Unknown",
         place: user.user_metadata?.place || "Unknown",
+        top_tech: user.user_metadata?.top_tech || "Unknown",
         top_teches: user.user_metadata?.top_teches || [],
         teches: user.user_metadata?.teches || [],
         hobby: user.user_metadata?.hobby || null,
