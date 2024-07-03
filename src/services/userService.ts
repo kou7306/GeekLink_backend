@@ -4,9 +4,7 @@ import { Users, Message, Match } from "@prisma/client";
 // import { Match } from "../models/matchModel";
 // import { Message } from "../models/messageModel";
 
-export const getMatchingUsersService = async (
-  uuid: string
-): Promise<Users[]> => {
+export const getMatchingUsersService = async (uuid: string): Promise<Users[]> => {
   // MatchテーブルからマッチしたユーザーのIDを取得
   const matches = await prisma.match.findMany({
     where: {
@@ -59,9 +57,7 @@ export const getMessagesAndRoomService = async (
   return { roomId, messages };
 };
 
-export const checkUserExistsService = async (
-  user_id: string
-): Promise<boolean> => {
+export const checkUserExistsService = async (user_id: string): Promise<boolean> => {
   // 特定のユーザーIDが存在するかを確認
   const user = await prisma.users.findUnique({
     where: {
