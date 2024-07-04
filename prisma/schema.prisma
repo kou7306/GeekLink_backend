@@ -1,6 +1,7 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -15,6 +16,7 @@ model Users {
   sex              String
   age              String
   place            String
+  top_tech         String
   top_teches       String[]
   teches           String[]
   hobby            String?
