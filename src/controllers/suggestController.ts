@@ -5,6 +5,7 @@ import {
   getSameAgeUsersService,
   getSameGraduateYearUsersService,
   getSameJobTypeUsersService,
+  getSameTopTechUsersService,
 } from "../services/userService";
 import { Users } from "@prisma/client";
 
@@ -24,6 +25,9 @@ export const getAllSuggestUsers = async (req: Request, res: Response) => {
         userData.desired_occupation !== null
           ? await getSameJobTypeUsersService(userData.desired_occupation)
           : [];
+      const sameTopTechUsers = await getSameTopTechUsersService(
+        userData.top_tech
+      );
 
       //総合的なおすすめはそれぞれのサジェスト配列から取り出してカウントして、それを元にソートする
       const userScores = new Map<string, { user: Users; score: number }>();
@@ -48,6 +52,7 @@ export const getAllSuggestUsers = async (req: Request, res: Response) => {
       addUserToMap(sameAgeUsers, 1);
       addUserToMap(sameGraduateYearUsers, 1);
       addUserToMap(sameJobTypeUsers, 1);
+      addUserToMap(sameTopTechUsers, 1);
 
       // スコアに基づいてソートする
       const sortedUsers = Array.from(userScores.values())
@@ -62,6 +67,7 @@ export const getAllSuggestUsers = async (req: Request, res: Response) => {
         sameAgeUsers,
         sameGraduateYearUsers,
         sameJobTypeUsers,
+        sameTopTechUsers,
         sortedUsers,
       });
     } else {

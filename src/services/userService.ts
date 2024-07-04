@@ -17,7 +17,9 @@ export const getUserDataService = async (
   return user || null;
 };
 
-export const getMatchingUsersService = async (uuid: string): Promise<Users[]> => {
+export const getMatchingUsersService = async (
+  uuid: string
+): Promise<Users[]> => {
   // MatchテーブルからマッチしたユーザーのIDを取得
   const matches = await prisma.match.findMany({
     where: {
@@ -40,7 +42,6 @@ export const getMatchingUsersService = async (uuid: string): Promise<Users[]> =>
 
   return matchedUsers;
 };
-
 
 export const getMessagesAndRoomService = async (
   uuid: string,
@@ -71,7 +72,9 @@ export const getMessagesAndRoomService = async (
   return { roomId, messages };
 };
 
-export const checkUserExistsService = async (user_id: string): Promise<boolean> => {
+export const checkUserExistsService = async (
+  user_id: string
+): Promise<boolean> => {
   // 特定のユーザーIDが存在するかを確認
   const user = await prisma.users.findUnique({
     where: {
@@ -137,3 +140,15 @@ export const getSameJobTypeUsersService = async (
 };
 
 // 1位の技術を引数に取り、その技術の一致度の高いユーザーを取得する関数
+export const getSameTopTechUsersService = async (
+  top_tech: string
+): Promise<Users[]> => {
+  // 特定のユーザーIDが存在するかを確認
+  const users = await prisma.users.findMany({
+    where: {
+      top_tech: top_tech,
+    },
+  });
+
+  return users;
+};
