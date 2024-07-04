@@ -1,8 +1,14 @@
 import { Router } from "express";
-import { getGroupMessages } from "../controllers/groupController";
+import {
+  getGroupMessages,
+  getGroupMembers,
+  addGroupMember,
+} from "../controllers/groupController";
 
 const router = Router();
 
 router.get("/get-group-messages", getGroupMessages);
+router.get("/get-group-members", getGroupMembers);
+router.post("/add-group-members", addGroupMember);
 
 export default router;
