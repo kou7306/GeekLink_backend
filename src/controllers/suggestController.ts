@@ -7,7 +7,7 @@ import {
   getSameJobTypeUsersService,
   getSameTopTechUsersService,
 } from "../services/userService";
-import { User } from "../models/userModel";
+import { Users } from "@prisma/client";
 
 export const getAllSuggestUsers = async (req: Request, res: Response) => {
   console.log("getAllSuggestUsers");
@@ -30,9 +30,9 @@ export const getAllSuggestUsers = async (req: Request, res: Response) => {
       );
 
       //総合的なおすすめはそれぞれのサジェスト配列から取り出してカウントして、それを元にソートする
-      const userScores = new Map<string, { user: User; score: number }>();
+      const userScores = new Map<string, { user: Users; score: number }>();
 
-      function addUserToMap(userList: User[], score: number) {
+      function addUserToMap(userList: Users[], score: number) {
         userList.forEach((user) => {
           if (userScores.has(user.user_id)) {
             const existingUser = userScores.get(user.user_id);
