@@ -62,3 +62,9 @@ model Like {
   liked_user_id String
   user_id     String
 }
+
+model Group {
+  id              String   @id @default(uuid())
+  owner_id        String
+  member_ids      String[]
+}
