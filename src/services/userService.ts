@@ -17,9 +17,6 @@ export const getUserDataService = async (
   return user || null;
 };
 
-export const getMatchingUsersService = async (
-  uuid: string
-): Promise<Users[]> => {
 export const getMatchingUsersService = async (uuid: string): Promise<Users[]> => {
   // MatchテーブルからマッチしたユーザーのIDを取得
   const matches = await prisma.match.findMany({
@@ -43,6 +40,7 @@ export const getMatchingUsersService = async (uuid: string): Promise<Users[]> =>
 
   return matchedUsers;
 };
+
 
 export const getMessagesAndRoomService = async (
   uuid: string,
