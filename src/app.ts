@@ -7,9 +7,13 @@ import profileRoutes from "./routes/profileRoutes";
 import likeRoutes from "./routes/likeRoutes";
 import matchRoutes from "./routes/matchRoutes";
 import suggestRoutes from "./routes/suggestRoutes";
+import groupRoutes from "./routes/groupRoutes";
 import http from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
-import { handleSocketConnection } from "./controllers/wsController";
+import {
+  chatSocketConnection,
+  groupChatSocketConnection,
+} from "./controllers/wsController";
 
 dotenv.config();
 
@@ -44,5 +48,8 @@ app.use("/profile", profileRoutes);
 app.use("/likes", likeRoutes);
 app.use("/match", matchRoutes);
 app.use("/suggest", suggestRoutes);
-io.of("/ws/chat").on("connection", handleSocketConnection);
+app.use("/group", groupRoutes);
+io.of("/ws/chat").on("connection", chatSocketConnection);
+io.of("/ws/group-chat").on("connection", groupChatSocketConnection);
+
 export { app, server, io };
