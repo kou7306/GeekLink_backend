@@ -2,17 +2,29 @@ import prisma from "../config/prisma";
 import { Like } from "../models/likeModel";
 import { CreateMatch } from "../models/matchModel";
 
-export const matchingCheck = async (user_id: string, other_user_id: string): Promise<void> => {
+export const matchingCheck = async (
+  user_id: string,
+  other_user_id: string
+): Promise<void> => {
   const [filteredLikes, row_id] = await filterLikes(user_id, other_user_id);
-  const [filteredOtherLikes, other_row_id] = await filterLikes(other_user_id, user_id);
+  const [filteredOtherLikes, other_row_id] = await filterLikes(
+    other_user_id,
+    user_id
+  );
 
-  if (filteredLikes.length === 1 && filteredOtherLikes.length === 1) {
+  console.log("filteredLikes", filteredLikes);
+  console.log("filteredOtherLikes", filteredOtherLikes);
+
+  if (filteredLikes.length >= 1 && filteredOtherLikes.length >= 1) {
     await createMatching(user_id, other_user_id);
     await deleteLike(row_id, other_row_id);
   }
 };
 
-const filterLikes = async (user_id: string, other_user_id: string): Promise<[Like[], number]> => {
+const filterLikes = async (
+  user_id: string,
+  other_user_id: string
+): Promise<[Like[], number]> => {
   try {
     const likes = await prisma.like.findMany({
       where: {
@@ -32,7 +44,10 @@ const filterLikes = async (user_id: string, other_user_id: string): Promise<[Lik
   }
 };
 
-const createMatching = async (user1_id: string, user2_id: string): Promise<void> => {
+const createMatching = async (
+  user1_id: string,
+  user2_id: string
+): Promise<void> => {
   const match: CreateMatch = {
     user1_id,
     user2_id,
@@ -48,7 +63,10 @@ const createMatching = async (user1_id: string, user2_id: string): Promise<void>
   }
 };
 
-const deleteLike = async (row_id: number, other_row_id: number): Promise<void> => {
+const deleteLike = async (
+  row_id: number,
+  other_row_id: number
+): Promise<void> => {
   try {
     await prisma.like.delete({
       where: { id: row_id },
