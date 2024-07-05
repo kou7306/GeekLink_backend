@@ -9,7 +9,7 @@ generator client {
   binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
 }
 
-model Users {
+model users {
   user_id          String   @id @default(uuid())
   created_at       DateTime @default(now())
   name             String

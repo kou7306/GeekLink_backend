@@ -1,6 +1,6 @@
 import exp from "constants";
 import prisma from "../config/prisma";
-import { Message, UserGroups, Users } from "@prisma/client";
+import { Message, UserGroups, users } from "@prisma/client";
 import { group } from "console";
 
 export const getGroupMessagesService = async (
@@ -18,7 +18,7 @@ export const getGroupMessagesService = async (
 
 export const getGroupMembersService = async (
   groupId: string
-): Promise<{ group: UserGroups | null; members: Users[] }> => {
+): Promise<{ group: UserGroups | null; members: users[] }> => {
   // Groupテーブルから関連するメンバーを取得
   const group: UserGroups | null = await prisma.userGroups.findUnique({
     where: {
@@ -30,8 +30,8 @@ export const getGroupMembersService = async (
     return { group: null, members: [] };
   }
 
-  // member_idsを使用してUsersテーブルからユーザー情報を取得
-  const members: Users[] = await prisma.users.findMany({
+  // member_idsを使用してusersテーブルからユーザー情報を取得
+  const members: users[] = await prisma.users.findMany({
     where: {
       user_id: {
         in: group.member_ids,

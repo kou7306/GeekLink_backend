@@ -1,7 +1,10 @@
-import { Users as PrismaUser } from "@prisma/client";
+import { users as PrismaUser } from "@prisma/client";
 import prisma from "../config/prisma";
 
-export const updateProfileService = async (user_id: string, profileData: PrismaUser) => {
+export const updateProfileService = async (
+  user_id: string,
+  profileData: PrismaUser
+) => {
   try {
     const updatedUser = await prisma.users.update({
       where: { user_id: user_id },
@@ -14,7 +17,9 @@ export const updateProfileService = async (user_id: string, profileData: PrismaU
   }
 };
 
-export const getProfileService = async (user_id: string): Promise<PrismaUser | null> => {
+export const getProfileService = async (
+  user_id: string
+): Promise<PrismaUser | null> => {
   try {
     const user = await prisma.users.findUnique({
       where: { user_id: user_id },
@@ -26,7 +31,10 @@ export const getProfileService = async (user_id: string): Promise<PrismaUser | n
   }
 };
 
-export const LikeStatusCheck = async (user_id: string, other_user_id: string) => {
+export const LikeStatusCheck = async (
+  user_id: string,
+  other_user_id: string
+) => {
   try {
     const result = await prisma.like.findFirst({
       where: {
