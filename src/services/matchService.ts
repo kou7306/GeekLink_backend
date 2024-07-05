@@ -1,7 +1,9 @@
-import { Users as PrismaUser } from "@prisma/client";
+import { users as PrismaUser } from "@prisma/client";
 import prisma from "../config/prisma";
 
-export const getRandomMatchesService = async (user_id: string): Promise<PrismaUser[]> => {
+export const getRandomMatchesService = async (
+  user_id: string
+): Promise<PrismaUser[]> => {
   try {
     const users = await prisma.users.findMany({
       where: {
