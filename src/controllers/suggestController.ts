@@ -15,18 +15,19 @@ export const getAllSuggestUsers = async (req: Request, res: Response) => {
   try {
     const userData = await getUserDataService(uuid);
     if (userData !== null) {
-      const samePlaceUsers = await getSamePlaceUsersService(userData.place);
-      const sameAgeUsers = await getSameAgeUsersService(userData.age);
+      const samePlaceUsers = await getSamePlaceUsersService(userData.place, uuid);
+      const sameAgeUsers = await getSameAgeUsersService(userData.age, uuid);
       const sameGraduateYearUsers =
         userData.graduate !== null
-          ? await getSameGraduateYearUsersService(userData.graduate)
+          ? await getSameGraduateYearUsersService(userData.graduate, uuid)
           : [];
       const sameJobTypeUsers =
         userData.desired_occupation !== null
-          ? await getSameJobTypeUsersService(userData.desired_occupation)
+          ? await getSameJobTypeUsersService(userData.desired_occupation, uuid)
           : [];
       const sameTopTechUsers = await getSameTopTechUsersService(
-        userData.top_tech
+        userData.top_tech,
+        uuid
       );
 
       //総合的なおすすめはそれぞれのサジェスト配列から取り出してカウントして、それを元にソートする

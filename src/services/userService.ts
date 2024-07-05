@@ -80,11 +80,14 @@ export const checkUserExistsService = async (user_id: string): Promise<boolean> 
 };
 
 // 出身地を引数に取り、その出身地のユーザーを取得する関数
-export const getSamePlaceUsersService = async (place: string): Promise<Users[]> => {
+export const getSamePlaceUsersService = async (place: string, uuid: string): Promise<Users[]> => {
   // 特定のユーザーIDが存在するかを確認
   const users = await prisma.users.findMany({
     where: {
       place: place,
+      NOT: {
+        user_id: uuid,
+      },
     },
   });
 
@@ -92,11 +95,14 @@ export const getSamePlaceUsersService = async (place: string): Promise<Users[]> 
 };
 
 // 年齢を引数に取り、その年齢のユーザーを取得する関数
-export const getSameAgeUsersService = async (age: string): Promise<Users[]> => {
+export const getSameAgeUsersService = async (age: string, uuid: string): Promise<Users[]> => {
   // 特定のユーザーIDが存在するかを確認
   const users = await prisma.users.findMany({
     where: {
       age: age,
+      NOT: {
+        user_id: uuid,
+      },
     },
   });
 
@@ -104,11 +110,14 @@ export const getSameAgeUsersService = async (age: string): Promise<Users[]> => {
 };
 
 // 卒業年度を引数に取り、その卒業年度のユーザーを取得する関数
-export const getSameGraduateYearUsersService = async (graduate: string): Promise<Users[]> => {
+export const getSameGraduateYearUsersService = async (graduate: string, uuid: string): Promise<Users[]> => {
   // 特定のユーザーIDが存在するかを確認
   const users = await prisma.users.findMany({
     where: {
       graduate: graduate,
+      NOT: {
+        user_id: uuid,
+      },
     },
   });
 
@@ -116,11 +125,14 @@ export const getSameGraduateYearUsersService = async (graduate: string): Promise
 };
 
 // 希望職種を引数に取り、その希望職種のユーザーを取得する関数
-export const getSameJobTypeUsersService = async (desired_occupation: string): Promise<Users[]> => {
+export const getSameJobTypeUsersService = async (desired_occupation: string, uuid: string): Promise<Users[]> => {
   // 特定のユーザーIDが存在するかを確認
   const users = await prisma.users.findMany({
     where: {
       desired_occupation: desired_occupation,
+      NOT: {
+        user_id: uuid,
+      },
     },
   });
 
@@ -128,11 +140,14 @@ export const getSameJobTypeUsersService = async (desired_occupation: string): Pr
 };
 
 // 1位の技術を引数に取り、その技術の一致度の高いユーザーを取得する関数
-export const getSameTopTechUsersService = async (top_tech: string): Promise<Users[]> => {
+export const getSameTopTechUsersService = async (top_tech: string, uuid: string): Promise<Users[]> => {
   // 特定のユーザーIDが存在するかを確認
   const users = await prisma.users.findMany({
     where: {
       top_tech: top_tech,
+      NOT: {
+        user_id: uuid,
+      },
     },
   });
 
