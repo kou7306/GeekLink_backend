@@ -22,10 +22,12 @@ export const getGroupMembers = async (req: Request, res: Response) => {
   const { groupId } = req.query as { groupId: string };
   console.log("groupId: ", groupId);
   try {
-    const { group } = await getGroupMembersService(groupId);
-    console.log("members: ", group);
-    res.status(200).json({ group: group });
+    const { group, members } = await getGroupMembersService(groupId);
+    console.log("group: ", group);
+    console.log("members: ", members);
+    res.status(200).json({ group, members });
   } catch (error) {
+    console.error("Error fetching group members:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
