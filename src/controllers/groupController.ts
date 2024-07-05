@@ -4,6 +4,7 @@ import {
   getGroupMembersService,
   addGroupMemberService,
   createGroupService,
+  getGroupListService
 } from "../services/groupService";
 import exp from "constants";
 
@@ -59,6 +60,16 @@ export const createGroup = async (req: Request, res: Response) => {
     const group = await createGroupService(groupData);
     res.status(200).json({ group });
   } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getGroupList = async (req: Request, res: Response) => {
+  try {
+    const group = await getGroupListService();
+    res.status(200).json({ group });
+  } catch (error) {
+    console.error("Error fetching group members:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -79,3 +79,9 @@ export const createGroupService = async (groupData: {
 
   return group;
 };
+
+export const getGroupListService = async (): Promise<UserGroups[]> => {
+  const group: UserGroups[] = await prisma.userGroups.findMany();
+
+  return group;
+};
