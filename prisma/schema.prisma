@@ -30,7 +30,7 @@ model users {
   zenn             String?
   atcoder          String?
   message          String?
-  updated_at       DateTime @updatedAt
+  updated_at       DateTime? @updatedAt
   portfolio        String?
   graduate         String?
   desired_occupation String?
