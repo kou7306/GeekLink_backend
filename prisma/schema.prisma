@@ -63,7 +63,7 @@ model Like {
   user_id     String
 }
 
-model Groups {
+model UserGroups {
   id              String   @id @default(uuid())
   owner_id        String
   member_ids      String[]
