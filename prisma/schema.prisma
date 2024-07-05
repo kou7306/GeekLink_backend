@@ -67,4 +67,6 @@ model Group {
   id              String   @id @default(uuid())
   owner_id        String
   member_ids      String[]
+  name            String
+  description     String
 }

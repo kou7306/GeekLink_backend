@@ -60,3 +60,22 @@ export const addGroupMemberService = async (
 
   return group;
 };
+
+export const createGroupService = async (groupData: {
+  owner_id: string;
+  member_ids: string[];
+  name: string;
+  description: string;
+}): Promise<Group> => {
+  // Groupテーブルに新しいグループを追加
+  const group: Group = await prisma.group.create({
+    data: {
+      owner_id: groupData.owner_id,
+      member_ids: groupData.member_ids,
+      name: groupData.name,
+      description: groupData.description,
+    },
+  });
+
+  return group;
+};

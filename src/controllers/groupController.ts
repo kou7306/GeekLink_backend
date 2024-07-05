@@ -3,6 +3,7 @@ import {
   getGroupMessagesService,
   getGroupMembersService,
   addGroupMemberService,
+  createGroupService,
 } from "../services/groupService";
 import exp from "constants";
 
@@ -39,6 +40,24 @@ export const addGroupMember = async (req: Request, res: Response) => {
   try {
     await addGroupMemberService(groupId, uuid);
     res.status(200).json({ message: "success" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const createGroup = async (req: Request, res: Response) => {
+  const { groupData } = req.body as {
+    groupData: {
+      owner_id: string;
+      member_ids: string[];
+      name: string;
+      description: string;
+    };
+  };
+  console.log("groupData: ", groupData);
+  try {
+    const group = await createGroupService(groupData);
+    res.status(200).json({ group });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
