@@ -2,10 +2,12 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+  schemas  = ["auth", "public"]
 }
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
   binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
 }
 
@@ -37,6 +39,8 @@ model users {
   faculty          String?
   experience       String[]
   image_url        String?
+
+  @@schema("public")
 }
 
 model Message {
@@ -46,6 +50,8 @@ model Message {
   receiver_id     String
   content         String
   room_id         String
+
+  @@schema("public")
 }
 
 model Match {
@@ -54,6 +60,8 @@ model Match {
   user1_id   String
   user2_id   String
   room_id    String    @default(dbgenerated("gen_random_uuid()"))
+
+  @@schema("public")
 }
 
 model Like {
@@ -61,6 +69,8 @@ model Like {
   created_at  DateTime @default(now())
   liked_user_id String
   user_id     String
+
+  @@schema("public")
 }
 
 model UserGroups {
@@ -69,4 +79,20 @@ model UserGroups {
   member_ids      String[]
   name            String
   description     String
+
+  @@schema("public")
+}
+
+model Event {
+  id               String   @id @default(uuid())
+  created_at       DateTime @default(now())
+  title            String
+  tech_stack       String[]
+  max_participants Int
+  event_type       String
+  owner_id         String
+  participant_ids  String[]
+  description      String?
+
+  @@schema("public")
 }
