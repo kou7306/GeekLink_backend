@@ -5,11 +5,17 @@ import {
   addReactionService,
 } from "../services/timelineService";
 
-export const getPost = async (req: Request, res: Response) => {
+export const getPosts = async (req: Request, res: Response) => {
+  // クエリパラメータからページとリミットを取得
+  const page = parseInt(req.query.page as string, 10) || 1;
+  const limit = parseInt(req.query.limit as string, 10) || 10;
+
   try {
-    const { posts } = await getPostService();
-    res.status(200).json({ posts: posts });
+    // サービスからページネーションされたデータを取得
+    const { posts } = await getPostService(page, limit);
+    res.status(200).json({ posts });
   } catch (error) {
+    console.error("Error fetching posts:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

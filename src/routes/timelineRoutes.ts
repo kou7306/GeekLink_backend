@@ -1,13 +1,13 @@
 import { Router } from "express";
 import {
-  getPost,
+  getPosts,
   createPost,
   addReaction,
 } from "../controllers/timelineController";
 
 const router = Router();
 
-router.get("/post", getPost);
+router.get("/post", getPosts);
 router.post("/create-post", createPost);
 router.post("/add-reaction", addReaction);
 
