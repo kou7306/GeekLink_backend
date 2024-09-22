@@ -1,13 +1,26 @@
-// src/routes/eventRoutes.ts
-
 import { Router } from "express";
-import { getAllEvents, createEvent, deleteEvent, joinEvent } from "../controllers/eventController";
+import {
+  createEvent,
+  deleteEvent,
+  getEventById,
+  joinEvent,
+  updateEvent,
+  getAllEvents,
+  leaveEvent,
+  searchEventsByTitle,
+  getEventsByOwner,
+} from "../controllers/eventController";
 
 const router = Router();
 
-router.get("/get", getAllEvents);
-router.post("/create", createEvent);
-router.delete("/delete/:id", deleteEvent);
-router.post("/join/:eventId", joinEvent);
+router.post("/", createEvent);
+router.get("/", getAllEvents);
+router.get("/search", searchEventsByTitle);
+router.get("/owner/:ownerId", getEventsByOwner);
+router.get("/:id", getEventById);
+router.delete("/:id", deleteEvent);
+router.put("/:id", updateEvent);
+router.post("/:id/join", joinEvent);
+router.post("/:id/leave", leaveEvent);
 
 export default router;

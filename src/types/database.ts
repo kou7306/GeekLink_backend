@@ -2,6 +2,7 @@ import { Match } from "../models/matchModel";
 import { User } from "../models/userModel";
 import { Message } from "../models/messageModel";
 import { Like } from "../models/likeModel";
+import { Event } from "../models/eventModel";
 
 export interface Database {
   public: {
@@ -17,6 +18,9 @@ export interface Database {
       };
       Message: {
         Row: Message;
+      };
+      Event: {
+        Row: Event;
       };
     };
   };

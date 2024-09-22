@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
-import { createLikeService, getLikedUsersService, getUsersWhoLikedMeService, OnecreateLikeService } from "../services/likeService";
+import {
+  createLikeService,
+  getLikedUsersService,
+  getUsersWhoLikedMeService,
+  OnecreateLikeService,
+} from "../services/likeService";
 
 export const createLike = async (req: Request, res: Response) => {
-  console.log("Received data:", req.body);
   try {
     const { uuid, IDs } = req.body;
     await createLikeService(uuid, IDs);
