@@ -1,13 +1,13 @@
-// src/models/eventModel.ts
-
 export type Event = {
-  id?: string;
-  created_at?: Date;
+  id: string;
   title: string;
-  tech_stack: string[];
-  max_participants: number;
   event_type: string;
   owner_id: string;
+  max_participants: number;
   participant_ids: string[];
-  description: string | null;
+  purpose: string;
+  requirements: string;
+  deadline: Date;
+  created_at: Date;
+  updated_at: Date | null;
 };
