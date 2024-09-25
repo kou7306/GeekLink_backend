@@ -1,5 +1,5 @@
 import prisma from "../config/prisma";
-import { Like } from "../models/likeModel";
+import { Like } from "../models/followModel";
 import { CreateMatch } from "../models/matchModel";
 
 export const matchingCheck = async (

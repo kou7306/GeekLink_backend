@@ -36,10 +36,10 @@ export const LikeStatusCheck = async (
   other_user_id: string
 ) => {
   try {
-    const result = await prisma.like.findFirst({
+    const result = await prisma.follow.findFirst({
       where: {
         user_id: user_id,
-        liked_user_id: other_user_id,
+        followed_user_id: other_user_id,
       },
     });
 

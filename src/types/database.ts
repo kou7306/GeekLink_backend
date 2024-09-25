@@ -1,7 +1,7 @@
 import { Match } from "../models/matchModel";
 import { User } from "../models/userModel";
 import { Message } from "../models/messageModel";
-import { Like } from "../models/likeModel";
+import { Like } from "../models/followModel";
 
 export interface Database {
   public: {
