@@ -1,72 +1,100 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+  binaryTargets   = ["native", "linux-arm64-openssl-3.0.x"]
 }
 
-generator client {
-  provider = "prisma-client-js"
-  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["auth", "public"]
 }
 
 model users {
-  user_id          String   @id @default(uuid())
-  created_at       DateTime @default(now())
-  name             String
-  sex              String
-  age              String
-  place            String
-  top_tech         String
-  top_teches       String[]
-  teches           String[]
-  hobby            String?
-  occupation       String
-  affiliation      String?
-  qualification    String[]
-  editor           String?
-  github           String?
-  twitter          String?
-  qiita            String?
-  zenn             String?
-  atcoder          String?
-  message          String?
-  updated_at       DateTime? @updatedAt
-  portfolio        String?
-  graduate         String?
+  user_id            String    @id @default(uuid())
+  created_at         DateTime  @default(now())
+  name               String
+  sex                String
+  age                String
+  place              String
+  top_tech           String
+  top_teches         String[]
+  teches             String[]
+  hobby              String?
+  occupation         String
+  affiliation        String?
+  qualification      String[]
+  editor             String?
+  github             String?
+  twitter            String?
+  qiita              String?
+  zenn               String?
+  atcoder            String?
+  message            String?
+  updated_at         DateTime? @updatedAt
+  portfolio          String?
+  graduate           String?
   desired_occupation String?
-  faculty          String?
-  experience       String[]
-  image_url        String?
+  faculty            String?
+  experience         String[]
+  image_url          String?
+
+  @@schema("public")
 }
 
 model Message {
-  id              String   @id @default(uuid())
-  created_at      DateTime @default(now())
-  sender_id       String
-  receiver_id     String
-  content         String
-  room_id         String
+  id          String   @id @default(uuid())
+  created_at  DateTime @default(now())
+  sender_id   String
+  receiver_id String
+  content     String
+  room_id     String
+
+  @@schema("public")
 }
 
 model Match {
-  id         Int       @id @default(autoincrement())
-  created_at DateTime  @default(now())
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
   user1_id   String
   user2_id   String
-  room_id    String    @default(dbgenerated("gen_random_uuid()"))
+  room_id    String   @default(dbgenerated("gen_random_uuid()"))
+
+  @@schema("public")
 }
 
 model Like {
-  id          Int      @id @default(autoincrement())
-  created_at  DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  created_at    DateTime @default(now())
   liked_user_id String
-  user_id     String
+  user_id       String
+
+  @@schema("public")
 }
 
 model UserGroups {
-  id              String   @id @default(uuid())
-  owner_id        String
-  member_ids      String[]
-  name            String
-  description     String
+  id          String   @id @default(uuid())
+  owner_id    String
+  member_ids  String[]
+  name        String
+  description String
+
+  @@schema("public")
+}
+
+model Event {
+  id               String    @id @unique @default(uuid())
+  created_at       DateTime  @default(now()) @db.Timestamptz(6)
+  title            String
+  max_participants Int
+  event_type       String
+  owner_id         String
+  participant_ids  String[]  @default([])
+  purpose          String
+  deadline         DateTime  @db.Timestamptz(6)
+  updated_at       DateTime? @default(now()) @db.Timestamptz(6)
+  requirements     String
+
+  @@schema("public")
 }
