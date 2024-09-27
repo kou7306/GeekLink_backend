@@ -9,6 +9,7 @@ import matchRoutes from "./routes/matchRoutes";
 import suggestRoutes from "./routes/suggestRoutes";
 import groupRoutes from "./routes/groupRoutes";
 import eventRoutes from "./routes/eventRoutes";
+import githubRoutes from "./routes/githubRoute";
 import http from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import {
@@ -51,6 +52,7 @@ app.use("/match", matchRoutes);
 app.use("/suggest", suggestRoutes);
 app.use("/group", groupRoutes);
 app.use("/events", eventRoutes);
+app.use("/github", githubRoutes);
 io.of("/ws/chat").on("connection", chatSocketConnection);
 io.of("/ws/group-chat").on("connection", groupChatSocketConnection);
 
