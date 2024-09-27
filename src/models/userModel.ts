@@ -26,6 +26,7 @@ export type User = {
   faculty?: string;
   experience: string[];
   image_url?: string;
+  qiita_access_token?: string;
 };
 
 export type TopUserResponse = {
