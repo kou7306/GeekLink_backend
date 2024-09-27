@@ -1,5 +1,5 @@
 import prisma from "../config/prisma";
-import { Like } from "../models/followModel";
+import { Follow } from "../models/followModel";
 import { CreateMatch } from "../models/matchModel";
 
 export const matchingCheck = async (
@@ -24,7 +24,7 @@ export const matchingCheck = async (
 const filterLikes = async (
   user_id: string,
   other_user_id: string
-): Promise<[Like[], number]> => {
+): Promise<[Follow[], number]> => {
   try {
     const likes = await prisma.like.findMany({
       where: {
@@ -68,18 +68,18 @@ const deleteLike = async (
   other_row_id: number
 ): Promise<void> => {
   try {
-    await prisma.like.delete({
+    await prisma.follow.delete({
       where: { id: row_id },
     });
   } catch (error) {
-    console.error("Error deleting like:", error);
+    console.error("Error deleting follow:", error);
   }
 
   try {
-    await prisma.like.delete({
+    await prisma.follow.delete({
       where: { id: other_row_id },
     });
   } catch (error: any) {
-    console.error("Error deleting like:", error);
+    console.error("Error deleting follow:", error);
   }
 };

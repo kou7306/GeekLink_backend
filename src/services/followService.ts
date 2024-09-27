@@ -12,16 +12,16 @@ export const followUserService = async (
 
     const row = {
       user_id,
-      liked_user_id: other_user_id,
+      followed_user_id: other_user_id,
       created_at: new Date(),
     };
 
     try {
-      await prisma.like.create({
+      await prisma.follow.create({
         data: row,
       });
     } catch (error: any) {
-      console.error("Error creating like:", error);
+      console.error("Error creating follow:", error);
       continue;
     }
 
@@ -40,14 +40,14 @@ export const unFollowUserService = async (
 
     try {
       // 該当するレコードを削除
-      await prisma.like.deleteMany({
+      await prisma.follow.deleteMany({
         where: {
           user_id: user_id,
-          liked_user_id: other_user_id,
+          followed_user_id: other_user_id,
         },
       });
     } catch (error: any) {
-      console.error("Error deleting like:", error);
+      console.error("Error deleting follow:", error);
       continue;
     }
 

@@ -50,7 +50,6 @@ app.get("/", (req, res) => {
 app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
-// app.use("/likes", likeRoutes);
 app.use("/match", matchRoutes);
 app.use("/suggest", suggestRoutes);
 app.use("/group", groupRoutes);
