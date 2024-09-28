@@ -12,34 +12,35 @@ datasource db {
 }
 
 model users {
-  user_id            String    @id @default(uuid())
-  created_at         DateTime  @default(now())
-  name               String
-  sex                String
-  age                String
-  place              String
-  top_tech           String
-  top_teches         String[]
-  teches             String[]
-  hobby              String?
-  occupation         String
-  affiliation        String?
-  qualification      String[]
-  editor             String?
-  github             String?
-  twitter            String?
-  qiita              String?
-  zenn               String?
-  atcoder            String?
-  message            String?
-  updated_at         DateTime? @updatedAt
-  portfolio          String?
-  graduate           String?
-  desired_occupation String?
-  faculty            String?
-  experience         String[]
-  image_url          String?
-  qiita_access_token String?
+  user_id             String    @id @default(uuid())
+  created_at          DateTime  @default(now())
+  name                String
+  sex                 String
+  age                 String
+  place               String
+  top_tech            String
+  top_teches          String[]
+  teches              String[]
+  hobby               String?
+  occupation          String
+  affiliation         String?
+  qualification       String[]
+  editor              String?
+  github              String?
+  twitter             String?
+  qiita               String?
+  zenn                String?
+  atcoder             String?
+  message             String?
+  updated_at          DateTime? @updatedAt
+  portfolio           String?
+  graduate            String?
+  desired_occupation  String?
+  faculty             String?
+  experience          String[]
+  image_url           String?
+  qiita_access_token  String?
+  github_access_token String?
 
   @@schema("public")
 }

@@ -27,6 +27,7 @@ export type User = {
   experience: string[];
   image_url?: string;
   qiita_access_token?: string;
+  github_access_token?: string;
 };
 
 export type TopUserResponse = {
