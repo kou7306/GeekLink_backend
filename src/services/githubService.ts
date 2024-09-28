@@ -30,8 +30,43 @@ export const githubCallBackService = async (
         github_access_token: accessToken,
       },
     });
-    console.log("Access token successfully saved");
+
+    await saveGithubUser(accessToken, uuid);
   } catch (error) {
     console.error("Failed to save access token:", error);
   }
 };
+
+export const saveGithubUser = async (accessToken: string, uuid: string) => {
+    try {
+      const query = `
+        query {
+          viewer {
+            login
+          }
+        }
+      `;
+  
+      const userResponse = await axios.post(
+        "https://api.github.com/graphql",
+        JSON.stringify({ query }),
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      const githubUser = userResponse.data.data.viewer.login;
+  
+      await prisma.users.update({
+        where: { user_id: uuid },
+        data: {
+          github: githubUser,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to fetch or save GitHub user info:", error);
+    }
+  };
