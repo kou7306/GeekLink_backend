@@ -8,6 +8,7 @@ export type Event = {
   purpose: string;
   requirements: string;
   deadline: Date;
+  techs: string[];
   created_at: Date;
   updated_at: Date | null;
 };
