@@ -19,6 +19,19 @@ jobs:
     name: Use Actions Status Discord
     runs-on: ubuntu-20.04
     steps:
+      - name: Get PR details
+        if: github.event_name == 'issue_comment' && github.event.issue.pull_request
+        id: pr_details
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_API_URL="${{ github.event.issue.pull_request.url }}"
+          PR_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$PR_API_URL")
+          PR_TITLE=$(echo "$PR_DATA" | jq -r .title)
+          PR_NUMBER=$(echo "$PR_DATA" | jq -r .number)
+          echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+
       - name: Discord Notification
         uses: sarisia/actions-status-discord@v1
         if: always()
@@ -26,10 +39,11 @@ jobs:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           message: |
             **Event:** ${{ github.event_name }}
-            **Type:** ${{ github.event.pull_request && 'Pull Request' || (github.event.issue && github.event.issue.pull_request && 'Pull Request Comment') || 'Issue' }}
-            **Title:** ${{ github.event.pull_request.title || github.event.issue.title }}
+            **Type:** ${{ github.event.pull_request && 'Pull Request' || (github.event.issue.pull_request && 'Pull Request Comment') || 'Issue' }}
+            **${{ github.event.issue.pull_request && 'PR' || 'Issue' }} Title:** ${{ steps.pr_details.outputs.pr_title || github.event.pull_request.title || github.event.issue.title }}
+            **${{ github.event.issue.pull_request && 'PR' || 'Issue' }} Number:** ${{ steps.pr_details.outputs.pr_number || github.event.pull_request.number || github.event.issue.number }}
             **Action:** ${{ github.event.action }}
-            **Link:** ${{ github.event.pull_request.html_url || github.event.comment.html_url || github.event.issue.html_url }}
+            **Link:** ${{ github.event.comment.html_url || github.event.pull_request.html_url || github.event.issue.html_url }}
             **User:** ${{ github.event.comment.user.login || github.event.review.user.login || github.event.pull_request.user.login || github.event.issue.user.login }}
             **${{ github.event_name == 'issue_comment' && 'Comment' || github.event.review && 'Review' || 'Description' }}:**
             ```
