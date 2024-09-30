@@ -68,7 +68,7 @@ export const updateEvent = async (req: Request, res: Response) => {
 export const joinEvent = async (req: Request, res: Response) => {
   try {
     const eventId = req.params.id;
-    const userId = req.body.userId; // ユーザーIDをリクエストボディから取得
+    const userId = req.body.userId;
     const updatedEvent = await joinEventService(eventId, userId);
     res.status(200).json(updatedEvent);
   } catch (error) {
