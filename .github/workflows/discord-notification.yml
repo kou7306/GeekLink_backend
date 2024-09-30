@@ -22,16 +22,58 @@ jobs:
       - name: Discord Notification
         uses: sarisia/actions-status-discord@v1
         if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: |
+          content: |
             Event: ${{ github.event_name }}
-            ${{ github.event_name == 'issue_comment' && github.event.issue.pull_request && 'PR Comment' || github.event.pull_request && 'Pull Request' || 'Issue' }}: ${{ github.event.pull_request.title || github.event.issue.title }}
-            Action: ${{ github.event.action }}
-            ${{ github.event_name == 'issue_comment' && github.event.issue.pull_request && 'PR' || 'Issue' }} Link: ${{ github.event.pull_request.html_url || github.event.issue.html_url }}
-            ${{ github.event.comment && 'Comment by' || github.event.review && 'Review by' || 'Created by' }}: ${{ github.event.comment.user.login || github.event.review.user.login || github.event.pull_request.user.login || github.event.issue.user.login }}
+
+            ${{ github.event_name == 'issue_comment' && format('PR Comment on #{0}', github.event.issue.number) || github.event.pull_request && format('Pull Request #{0}', github.event.pull_request.number) || format('Issue #{0}', github.event.issue.number) }}
+
+            Title: ${{ github.event.issue.title || github.event.pull_request.title }}
+
+            ${{ github.event_name == 'issue_comment' && 'Comment by' || github.event.review && 'Review by' || 'Created by' }}: ${{ github.event.comment.user.login || github.event.review.user.login || github.event.pull_request.user.login || github.event.issue.user.login }}
+
+            Link: ${{ github.event.comment.html_url || github.event.review.html_url || github.event.pull_request.html_url || github.event.issue.html_url }}
 
             ${{ github.event.comment && 'Comment' || github.event.review && 'Review' || 'Description' }}:
             ```
             ${{ github.event.comment.body || github.event.review.body || github.event.pull_request.body || github.event.issue.body }}
+            ```
+      - name: Get PR details for issue comment
+        if: github.event_name == 'issue_comment' && github.event.issue.pull_request
+        id: pr_details
+        run: |
+          PR_URL="${{ github.event.issue.pull_request.url }}"
+          PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$PR_URL")
+          PR_TITLE=$(echo "$PR_DATA" | jq -r .title)
+          PR_BODY=$(echo "$PR_DATA" | jq -r .body)
+          echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
+          echo "pr_body<<EOF" >> $GITHUB_OUTPUT
+          echo "$PR_BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Discord Notification for PR Comment
+        uses: sarisia/actions-status-discord@v1
+        if: github.event_name == 'issue_comment' && github.event.issue.pull_request
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          content: |
+            Event: PR Comment
+
+            PR #${{ github.event.issue.number }}: ${{ steps.pr_details.outputs.pr_title }}
+
+            Comment by: ${{ github.event.comment.user.login }}
+
+            PR Link: ${{ github.event.issue.pull_request.html_url }}
+            Comment Link: ${{ github.event.comment.html_url }}
+
+            Comment:
+            ```
+            ${{ github.event.comment.body }}
+            ```
+
+            PR Description:
+            ```
+            ${{ steps.pr_details.outputs.pr_body }}
             ```
