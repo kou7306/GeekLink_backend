@@ -21,11 +21,17 @@ jobs:
     steps:
       - name: Discord Notification
         uses: sarisia/actions-status-discord@v1
-        if: always() && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'stg' || github.event_name == 'issue_comment')
+        if: always()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           message: |
-            ${{ github.event.pull_request.title || github.event.issue.title }} - ${{ github.event.action }} 
-            @ [PR/Issue Link](${{ github.event.pull_request.html_url || github.event.issue.html_url }})
+            Event: ${{ github.event_name }}
+            ${{ github.event_name == 'issue_comment' && github.event.issue.pull_request && 'PR Comment' || github.event.pull_request && 'Pull Request' || 'Issue' }}: ${{ github.event.pull_request.title || github.event.issue.title }}
+            Action: ${{ github.event.action }}
+            ${{ github.event_name == 'issue_comment' && github.event.issue.pull_request && 'PR' || 'Issue' }} Link: ${{ github.event.pull_request.html_url || github.event.issue.html_url }}
+            ${{ github.event.comment && 'Comment by' || github.event.review && 'Review by' || 'Created by' }}: ${{ github.event.comment.user.login || github.event.review.user.login || github.event.pull_request.user.login || github.event.issue.user.login }}
 
-            ${{ github.event.comment.body || github.event.review.body || '' }}
+            ${{ github.event.comment && 'Comment' || github.event.review && 'Review' || 'Description' }}:
+            ```
+            ${{ github.event.comment.body || github.event.review.body || github.event.pull_request.body || github.event.issue.body }}
+            ```
