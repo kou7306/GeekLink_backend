@@ -1,0 +1,23 @@
+name: discord-notification
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - stg
+      - main
+  pull_request_review: # branchesフィルターは不要
+    types: [submitted] # レビューが完了したとき
+
+jobs:
+  command:
+    name: Use Actions Status Discord
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Discord Notification
+        uses: sarisia/actions-status-discord@v1
+        if: always() && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'stg')
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
