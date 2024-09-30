@@ -17,7 +17,8 @@ export const matchingCheck = async (
 
   if (filteredLikes.length >= 1 && filteredOtherLikes.length >= 1) {
     await createMatching(user_id, other_user_id);
-    await deleteLike(row_id, other_row_id);
+  } else {
+    await deleteMatching(user_id, other_user_id);
   }
 };
 
@@ -63,23 +64,47 @@ const createMatching = async (
   }
 };
 
-const deleteLike = async (
-  row_id: number,
-  other_row_id: number
+const deleteMatching = async (
+  user1_id: string,
+  user2_id: string
 ): Promise<void> => {
   try {
-    await prisma.like.delete({
-      where: { id: row_id },
-    });
-  } catch (error) {
-    console.error("Error deleting like:", error);
-  }
-
-  try {
-    await prisma.like.delete({
-      where: { id: other_row_id },
+    await prisma.match.deleteMany({
+      where: {
+        OR: [
+          {
+            user1_id,
+            user2_id,
+          },
+          {
+            user1_id: user2_id,
+            user2_id: user1_id,
+          },
+        ],
+      },
     });
   } catch (error: any) {
-    console.error("Error deleting like:", error);
+    console.error("Error deleting match:", error);
   }
 };
+
+// const deleteLike = async (
+//   row_id: number,
+//   other_row_id: number
+// ): Promise<void> => {
+//   try {
+//     await prisma.like.delete({
+//       where: { id: row_id },
+//     });
+//   } catch (error) {
+//     console.error("Error deleting like:", error);
+//   }
+
+//   try {
+//     await prisma.like.delete({
+//       where: { id: other_row_id },
+//     });
+//   } catch (error: any) {
+//     console.error("Error deleting like:", error);
+//   }
+// };
