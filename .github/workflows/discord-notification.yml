@@ -8,10 +8,10 @@ on:
     branches:
       - stg
       - main
-    types: [opened, edited, reopened, synchronize] # PRのアクションを捕捉
-  pull_request_review: # レビューが提出されたとき
+    types: [opened, edited, reopened, synchronize]
+  pull_request_review:
     types: [submitted]
-  issue_comment: # PRのコメントを捕捉
+  issue_comment:
     types: [created]
 
 jobs:
@@ -21,11 +21,11 @@ jobs:
     steps:
       - name: Discord Notification
         uses: sarisia/actions-status-discord@v1
-        if: always() && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'stg')
+        if: always() && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'stg' || github.event_name == 'issue_comment')
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           message: |
-            ${{ github.event.pull_request.title }} - ${{ github.event.action }} 
-            @ [PR リンク](${{ github.event.pull_request.html_url }}) 
+            ${{ github.event.pull_request.title || github.event.issue.title }} - ${{ github.event.action }} 
+            @ [PR/Issue Link](${{ github.event.pull_request.html_url || github.event.issue.html_url }})
 
-            ${{ github.event.comment.body }} # コメントの内容も含める
+            ${{ github.event.comment.body || github.event.review.body || '' }}
