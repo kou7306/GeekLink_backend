@@ -8,8 +8,11 @@ on:
     branches:
       - stg
       - main
-  pull_request_review: # branchesフィルターは不要
-    types: [submitted] # レビューが完了したとき
+    types: [opened, edited, reopened, synchronize] # PRのアクションを捕捉
+  pull_request_review: # レビューが提出されたとき
+    types: [submitted]
+  issue_comment: # PRのコメントを捕捉
+    types: [created]
 
 jobs:
   command:
@@ -21,3 +24,8 @@ jobs:
         if: always() && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'stg')
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            ${{ github.event.pull_request.title }} - ${{ github.event.action }} 
+            @ [PR リンク](${{ github.event.pull_request.html_url }}) 
+
+            ${{ github.event.comment.body }} # コメントの内容も含める
