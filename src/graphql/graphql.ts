@@ -1,10 +1,11 @@
 import https from 'https';
 
-export const graphql = (query: string, variables: any) => {
+export const graphql = (query: string, variables: any, token: string | null) => {
   return new Promise((resolve, reject) => {
     const postData = JSON.stringify({
       query,
       variables: JSON.stringify(variables),
+      token,
     });
 
     const options = {
@@ -14,7 +15,7 @@ export const graphql = (query: string, variables: any) => {
       headers: {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(postData),
-        'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+        'Authorization': `Bearer ${token}`,
         'User-Agent': 'Node.js',
       },
     };
