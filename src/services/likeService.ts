@@ -2,32 +2,51 @@ import prisma from "../config/prisma";
 import { Like } from "../models/likeModel";
 import { matchingCheck } from "./matchingService";
 
+// いいねをする
 export const createLikeService = async (
   uuid: string,
-  IDs: string[]
+  ID: string
 ): Promise<void> => {
   const user_id = uuid;
+  const other_user_id = ID;
 
-  for (const id of IDs) {
-    const other_user_id = id;
+  const row: Like = {
+    user_id: user_id,
+    liked_user_id: other_user_id,
+    created_at: new Date(),
+  };
 
-    const row: Like = {
-      user_id,
-      liked_user_id: other_user_id,
-      created_at: new Date(),
-    };
-
-    try {
-      await prisma.like.create({
-        data: row,
-      });
-    } catch (error: any) {
-      console.error("Error creating like:", error);
-      continue;
-    }
-
-    await matchingCheck(user_id, other_user_id);
+  try {
+    await prisma.like.create({
+      data: row,
+    });
+  } catch (error: any) {
+    console.error("Error creating like:", error);
   }
+
+  await matchingCheck(user_id, other_user_id);
+};
+
+// いいねを取り消す
+export const deleteLikeService = async (
+  uuid: string,
+  ID: string
+): Promise<void> => {
+  const user_id = uuid;
+  const other_user_id = ID;
+
+  try {
+    await prisma.like.deleteMany({
+      where: {
+        user_id: user_id,
+        liked_user_id: other_user_id,
+      },
+    });
+  } catch (error: any) {
+    console.error("Error deleting like:", error);
+  }
+
+  await matchingCheck(user_id, other_user_id);
 };
 
 export const getLikedUsersService = async (uuid: string) => {
@@ -52,7 +71,10 @@ export const getLikedUsersService = async (uuid: string) => {
   return likedUsers;
 };
 
-export const getUsersWhoLikedMeService = async (uuid: string, matchingUserIds: string[]) => {
+export const getUsersWhoLikedMeService = async (
+  uuid: string,
+  matchingUserIds: string[]
+) => {
   // 自分のことをLikeしたユーザーのIDを取得
   const likes = await prisma.like.findMany({
     where: {
@@ -77,26 +99,4 @@ export const getUsersWhoLikedMeService = async (uuid: string, matchingUserIds: s
   });
 
   return usersWhoLikedMe;
-};
-
-// ユーザーページからいいねを送られた場合
-export const OnecreateLikeService = async (uuid: string, ID: string): Promise<void> => {
-  const user_id = uuid;
-  const other_user_id = ID;
-
-  const row: Like = {
-    user_id: user_id,
-    liked_user_id: other_user_id,
-    created_at: new Date(),
-  };
-
-  try {
-    await prisma.like.create({
-      data: row,
-    });
-  } catch (error: any) {
-    console.error("Error creating like:", error);
-  }
-
-  await matchingCheck(user_id, other_user_id);
 };
