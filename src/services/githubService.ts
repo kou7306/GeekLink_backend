@@ -230,7 +230,7 @@ export const getActivityLogService = async(username: string | null, token: strin
   const sortedContributions = contributions.sort((a: any, b: any) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime());
 
   return {
-    repositories: formattedRepositories,
+    sortRepositories: formattedRepositories,
     contributions: sortedContributions,
   };
 };
@@ -276,5 +276,8 @@ export const getUseLanguagesService = async(username: string | null, token: stri
 
   languagePercentage.sort((a, b) => b.percentage - a.percentage);
 
-  return languagePercentage;
+  // 言語の種類を6種類以下に制限
+  const topLanguages = languagePercentage.slice(0, 6);
+
+  return topLanguages;
 }

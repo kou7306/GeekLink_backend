@@ -23,6 +23,26 @@ export const githubCallback = async (req: Request, res: Response) => {
 };
 
 // ユーザーのGitHubから情報を取得
+export const getGithubInfo = async (req: Request, res: Response) => {
+  const { uuid } = req.body;
+  try {
+    const { username, token } = await getUserGithubInfo(uuid);
+
+    // 各サービスを呼び出す
+    const repositories = await getRepostiroryService(username, token);
+    const contributions = await getContributionService(username, token);
+    const logs = await getActivityLogService(username, token);
+    const languages = await getUseLanguagesService(username, token);
+
+    const result = {repositories, contributions, logs, languages}
+
+    res.json(result);
+  } catch(error) {
+    console.error("Error in getRepostitory:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 // ユーザーのリポジトリ情報を取得(最新10件)
 export const getRepository = async (req: Request, res: Response) => {
   const { uuid } = req.body;
@@ -59,7 +79,7 @@ export const getActivityLog = async (req: Request, res: Response) => {
   try {
     const { username, token } = await getUserGithubInfo(uuid);
 
-    const logs = await getActivityLogService(username, token);    
+    const logs = await getActivityLogService(username, token);   
 
     res.json(logs);
   } catch(error) {
@@ -74,9 +94,9 @@ export const getUseLanguage = async (req: Request, res: Response) => {
   try {
     const { username, token } = await getUserGithubInfo(uuid);
 
-    const logs = await getUseLanguagesService(username, token);    
+    const languages = await getUseLanguagesService(username, token);
 
-    res.json(logs);
+    res.json(languages);
   } catch(error) {
     console.error("Error in getUseLanguage:", error);
     res.status(500).json({ error: "Internal server error" });
