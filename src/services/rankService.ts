@@ -58,18 +58,6 @@ export const getUserRankService = async (uuid: string) => {
     // レベルの計算ロジック
     const { level, nextLevelPoints } = calculateUserLevel(contributions, totalQiitaPosts, totalOwnerEvents, totalAppPosts);
 
-    // コントリビューション数, Qiitaの投稿数, イベントの作成数, アプリ内投稿数
-    // レベル90以上の人
-    console.log("Lv90目安：Level",calculateUserLevel(1800,7,3,50))
-    // レベル70ぐらいの人
-    console.log("Lv70目安：Level",calculateUserLevel(1200,5,2,45))
-    // レベル50ぐらいの人
-    console.log("Lv50目安：Level",calculateUserLevel(800,3,1,40))
-    // レベル30ぐらいの人
-    console.log("Lv30目安：Level",calculateUserLevel(400,2,0,30))
-    // レベル10ぐらいの人
-    console.log("Lv10目安：Level",calculateUserLevel(100,1,0,20))
-
     // ランクの計算ロジック
     const rank = calculateUserRank(level);
 
