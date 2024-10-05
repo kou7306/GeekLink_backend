@@ -58,9 +58,9 @@ export const getContributionsQuery = `
 
 // ユーザーの直近のアクティビティログを取得
 export const getActivityLogQuery = `
-  query getActivityLog($username: String!) {
+query ($username: String!, $since: GitTimestamp!) {
   user(login: $username) {
-    repositories(first: 20, orderBy: { field: CREATED_AT, direction: DESC }) {
+    repositories(first: 100) {
       edges {
         node {
           name
@@ -68,40 +68,59 @@ export const getActivityLogQuery = `
             login
           }
           isFork
+          createdAt
           defaultBranchRef {
             target {
               ... on Commit {
-                history {
+                history(since: $since, first: 100) {
                   totalCount
+                  edges {
+                    node {
+                      message
+                      committedDate
+                      url
+                    }
+                  }
                 }
               }
             }
           }
-          createdAt
         }
       }
     }
     contributionsCollection {
-      pullRequestContributionsByRepository(maxRepositories: 10) {
-          repository {
-            name
-            owner {
-              login
-            }
-          }
-          contributions(first: 30) {
-            nodes {
-              occurredAt
-              pullRequest {
-                title
-                url
-              }
+      pullRequestContributionsByRepository {
+        repository {
+          name
+        }
+        contributions(first: 100) { 
+          nodes {
+            pullRequest {
+              title
+              url
+              mergedAt
+              createdAt
             }
           }
         }
+      }
+    }
+    issues(first: 100) {
+      edges {
+        node {
+          title
+          url
+          createdAt
+          closedAt
+          repository {
+            name
+          }
+        }
+      }
     }
   }
 }
+
 `;
 
 // ユーザーの使用言語を取得

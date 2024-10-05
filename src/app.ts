@@ -12,6 +12,7 @@ import timelineRoutes from "./routes/timelineRoutes";
 import eventRoutes from "./routes/eventRoutes";
 import githubRoutes from "./routes/githubRoute";
 import qiitaRoutes from "./routes/qiitaRoutes";
+import activityRoutes from "./routes/activityRoutes";
 import http from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import {
@@ -58,6 +59,7 @@ app.use("/timeline", timelineRoutes);
 app.use("/events", eventRoutes);
 app.use("/github", githubRoutes);
 app.use("/qiita", qiitaRoutes);
+app.use("/activity", activityRoutes);
 io.of("/ws/chat").on("connection", chatSocketConnection);
 io.of("/ws/group-chat").on("connection", groupChatSocketConnection);
 

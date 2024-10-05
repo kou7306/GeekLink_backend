@@ -1,18 +1,18 @@
 import prisma from "../config/prisma";
 import axios from "axios";
-import { graphql } from '../graphql/graphql';
-import { 
+import { graphql } from "../graphql/graphql";
+import {
   getRepositoryQuery,
-  getContributionsQuery, 
+  getContributionsQuery,
   getActivityLogQuery,
-  getUseLanguageQuery
-} from '../graphql/queries/getUserGithub';
+  getUseLanguageQuery,
+} from "../graphql/queries/getUserGithub";
 import {
   repositoryResponse,
   contributionResponse,
   MonthContribution,
-  activityResponse
-} from '../types/githubInterface';
+  activityResponse,
+} from "../types/githubInterface";
 
 export const githubCallBackService = async (
   uuid: string,
@@ -51,38 +51,38 @@ export const githubCallBackService = async (
 };
 
 export const saveGithubUser = async (accessToken: string, uuid: string) => {
-    try {
-      const query = `
+  try {
+    const query = `
         query {
           viewer {
             login
           }
         }
       `;
-  
-      const userResponse = await axios.post(
-        "https://api.github.com/graphql",
-        JSON.stringify({ query }),
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-  
-      const githubUser = userResponse.data.data.viewer.login;
-  
-      await prisma.users.update({
-        where: { user_id: uuid },
-        data: {
-          github: githubUser,
+
+    const userResponse = await axios.post(
+      "https://api.github.com/graphql",
+      JSON.stringify({ query }),
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
-      });
-    } catch (error) {
-      console.error("Failed to fetch or save GitHub user info:", error);
-    }
-  };
+      }
+    );
+
+    const githubUser = userResponse.data.data.viewer.login;
+
+    await prisma.users.update({
+      where: { user_id: uuid },
+      data: {
+        github: githubUser,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to fetch or save GitHub user info:", error);
+  }
+};
 
 // usersからgithubとgithub_access_tokenの値を取得
 export const getUserGithubInfo = async (uuid: string) => {
@@ -107,25 +107,27 @@ export const getUserGithubInfo = async (uuid: string) => {
 };
 
 // ユーザーのリポジトリ情報を取得(最新10件)
-export const getRepostiroryService = async(username: string | null, token: string | null) => {
-  const response = await graphql(
-    getRepositoryQuery,
-    { username },
-    token,
-  );
+export const getRepostiroryService = async (
+  username: string | null,
+  token: string | null
+) => {
+  const response = await graphql(getRepositoryQuery, { username }, token);
 
-  const repositories = (response as repositoryResponse).user.repositories.edges.map((edge) => {
-    const { name, stargazerCount, defaultBranchRef, languages, updatedAt } = edge.node;
-  
-    const languageData = languages.edges.map(lang => ({
+  const repositories = (
+    response as repositoryResponse
+  ).user.repositories.edges.map((edge) => {
+    const { name, stargazerCount, defaultBranchRef, languages, updatedAt } =
+      edge.node;
+
+    const languageData = languages.edges.map((lang) => ({
       name: lang.node.name,
-      size: lang.size
+      size: lang.size,
     }));
-  
+
     // 各リポジトリの言語量を求め, 言語の使用割合を計算
     const totalSize = languageData.reduce((sum, lang) => sum + lang.size, 0);
 
-    const languagePercentage = languageData.map(lang => ({
+    const languagePercentage = languageData.map((lang) => ({
       name: lang.name,
       size: lang.size,
       percentage: totalSize > 0 ? (lang.size / totalSize) * 100 : 0,
@@ -143,40 +145,44 @@ export const getRepostiroryService = async(username: string | null, token: strin
   });
 
   return repositories;
-}
+};
 
 // ユーザーのコントリビューション数を取得
-export const getContributionService = async(username: string | null, token: string | null) => {
-  const response = await graphql(
-    getContributionsQuery,
-    { username },
-    token,
-  );
+export const getContributionService = async (
+  username: string | null,
+  token: string | null
+) => {
+  const response = await graphql(getContributionsQuery, { username }, token);
 
-  const contributionCalendar = (response as contributionResponse).user.contributionsCollection.contributionCalendar
+  const contributionCalendar = (response as contributionResponse).user
+    .contributionsCollection.contributionCalendar;
 
   const { totalContributions, months, weeks } = contributionCalendar;
 
   const monthlyContributions: { [monthName: string]: number } = {};
 
-  weeks.forEach(week => {
-    week.contributionDays.forEach(day => {
+  weeks.forEach((week) => {
+    week.contributionDays.forEach((day) => {
       const contributionDate = new Date(day.date);
-      const monthName = contributionDate.toLocaleString('en', { month: 'short' });
+      const monthName = contributionDate.toLocaleString("en", {
+        month: "short",
+      });
       const year = contributionDate.getFullYear();
-      monthlyContributions[`${monthName} ${year}`] = (monthlyContributions[`${monthName} ${year}`] || 0) + day.contributionCount;
+      monthlyContributions[`${monthName} ${year}`] =
+        (monthlyContributions[`${monthName} ${year}`] || 0) +
+        day.contributionCount;
     });
   });
 
   const date = new Date();
-  const currentMonthName = date.toLocaleString('en', { month: 'short' });
+  const currentMonthName = date.toLocaleString("en", { month: "short" });
   const currentYear = date.getFullYear();
   const currentKey = `${currentMonthName} ${currentYear}`;
 
-  const updatedMonths: MonthContribution[] = months.slice(1).map(month => ({
+  const updatedMonths: MonthContribution[] = months.slice(1).map((month) => ({
     name: month.name,
     year: month.year,
-    contributions: monthlyContributions[`${month.name} ${month.year}`] || 0
+    contributions: monthlyContributions[`${month.name} ${month.year}`] || 0,
   }));
 
   updatedMonths.push({
@@ -189,90 +195,148 @@ export const getContributionService = async(username: string | null, token: stri
     totalContributions,
     months: updatedMonths,
   };
-}
+};
 
-// ユーザーの直近のアクティビティログを取得
-export const getActivityLogService = async(username: string | null, token: string | null) => {
+// ユーザーのアクティビティログを取得
+export const getActivityLogService = async (
+  username: string | null,
+  token: string | null,
+  hoursBack: number
+) => {
+  // 現在のUTC時間から指定した時間数を引き算してISO形式を取得
+  const sinceDate = new Date();
+  sinceDate.setUTCHours(sinceDate.getUTCHours() - hoursBack); // UTCでの時間を計算
+  const sinceISOString = sinceDate.toISOString(); // ISO形式に変換
+  console.log(typeof sinceISOString);
+  // GraphQLクエリを実行
   const response = await graphql(
     getActivityLogQuery,
-    { username },
-    token,
+    { username, since: sinceISOString }, // ここでsinceをISO形式で渡す
+    token
   );
 
-  const formattedRepositories = (response as activityResponse).user.repositories.edges
-  .filter((edge: any) => edge.node.owner.login === username && !edge.node.isFork)
-  .map((edge: any) => {
-    const node = edge.node;
-    return {
-      name: node.name,
-      owner: node.owner.login,
-      isFork: node.isFork,
-      commitCount: node.defaultBranchRef.target.history.totalCount,
-      createdAt: node.createdAt,
-    };
-  });
+  // 期待されるレスポンス形式を確認
+  const typedResponse = response as activityResponse;
+
+  if (!typedResponse || !typedResponse.user) {
+    throw new Error("Invalid response from GitHub API");
+  }
+
+  const formattedRepositories = (
+    response as activityResponse
+  ).user.repositories.edges
+    .filter((edge) => edge.node.owner.login === username && !edge.node.isFork)
+    .map((edge) => {
+      const node = edge.node;
+      return {
+        name: node.name,
+        owner: node.owner.login,
+        isFork: node.isFork,
+        commitCount: node.defaultBranchRef.target.history.totalCount,
+        createdAt: node.createdAt,
+        commits: node.defaultBranchRef.target.history.edges.map(
+          (commit: {
+            node: { message: any; committedDate: any; url: any };
+          }) => ({
+            message: commit.node.message,
+            committedDate: commit.node.committedDate,
+            url: commit.node.url,
+          })
+        ),
+      };
+    });
 
   const contributions: any[] = [];
+  const issues: any[] = [];
 
-  (response as activityResponse).user.contributionsCollection.pullRequestContributionsByRepository.forEach((repo: any) => {
-    const repoName = repo.repository.name;
-
-    repo.contributions.nodes.forEach((contribution: any) => {
-      contributions.push({
-        name: repoName,
-        title: contribution.pullRequest.title,
-        url: contribution.pullRequest.url,
-        occurredAt: contribution.occurredAt,
+  // プルリクエストの情報を取得
+  (
+    response as activityResponse
+  ).user.contributionsCollection.pullRequestContributionsByRepository.forEach(
+    (repo) => {
+      const repoName = repo.repository.name;
+      repo.contributions.nodes.forEach((contribution: any) => {
+        contributions.push({
+          name: repoName,
+          title: contribution.pullRequest.title,
+          url: contribution.pullRequest.url,
+          mergedAt: contribution.pullRequest.mergedAt,
+          createdAt: contribution.pullRequest.createdAt,
+        });
       });
-    });
-  });
+    }
+  );
 
-  const sortedContributions = contributions.sort((a: any, b: any) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime());
+  // イシューの情報を取得
+  (response as activityResponse).user.issues.edges.forEach(
+    (edge: { node: any }) => {
+      const issue = edge.node;
+      issues.push({
+        title: issue.title,
+        url: issue.url,
+        createdAt: issue.createdAt,
+        closedAt: issue.closedAt,
+        repository: issue.repository.name,
+      });
+    }
+  );
+
+  // contributionsを日付でソート
+  const sortedContributions = contributions.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
   return {
     sortRepositories: formattedRepositories,
     contributions: sortedContributions,
+    issues: issues,
   };
 };
 
 // ユーザーの使用言語量(割合)を取得
-export const getUseLanguagesService = async(username: string | null, token: string | null) => {
-  const response = await graphql(
-    getUseLanguageQuery,
-    { username },
-    token,
-  );
+export const getUseLanguagesService = async (
+  username: string | null,
+  token: string | null
+) => {
+  const response = await graphql(getUseLanguageQuery, { username }, token);
 
   const languages = (response as repositoryResponse).user.repositories.edges
-  .map((edge: any) => edge.node)
-  .filter((repo: any) => repo.owner.login === username && !repo.isFork);
+    .map((edge: any) => edge.node)
+    .filter((repo: any) => repo.owner.login === username && !repo.isFork);
 
   const languageMap: Record<string, number> = {};
 
   // 言語の使用量を計算
-  languages.forEach(repo => {
+  languages.forEach((repo) => {
     if (repo.languages.edges.length > 0) {
-      repo.languages.edges.forEach((edge: { node: { name: string }, size: number }) => {
-        const name = edge.node.name;
-        const size = edge.size;
+      repo.languages.edges.forEach(
+        (edge: { node: { name: string }; size: number }) => {
+          const name = edge.node.name;
+          const size = edge.size;
 
-        if (languageMap[name]) {
-          languageMap[name] += size;
-        } else {
-          languageMap[name] = size;
+          if (languageMap[name]) {
+            languageMap[name] += size;
+          } else {
+            languageMap[name] = size;
+          }
         }
-      });
+      );
     }
   });
 
-  const totalSize = Object.values(languageMap).reduce((sum, size) => sum + size, 0);
+  const totalSize = Object.values(languageMap).reduce(
+    (sum, size) => sum + size,
+    0
+  );
 
   // 言語の使用割合を計算
-  const languagePercentage = Object.entries(languageMap).map(([name, size]) => ({
-    name,
-    size,
-    percentage: totalSize > 0 ? (size / totalSize) * 100 : 0,
-  }));
+  const languagePercentage = Object.entries(languageMap).map(
+    ([name, size]) => ({
+      name,
+      size,
+      percentage: totalSize > 0 ? (size / totalSize) * 100 : 0,
+    })
+  );
 
   languagePercentage.sort((a, b) => b.percentage - a.percentage);
 
@@ -280,4 +344,4 @@ export const getUseLanguagesService = async(username: string | null, token: stri
   const topLanguages = languagePercentage.slice(0, 6);
 
   return topLanguages;
-}
+};

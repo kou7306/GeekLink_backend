@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
-import { 
-  githubCallBackService, 
+import { Request, Response } from "express";
+import {
+  githubCallBackService,
   getUserGithubInfo,
   getRepostiroryService,
   getContributionService,
   getActivityLogService,
-  getUseLanguagesService
-} from '../services/githubService';
+  getUseLanguagesService,
+} from "../services/githubService";
 
 // OAuthでアクセストークンを取得
 export const githubCallback = async (req: Request, res: Response) => {
@@ -31,13 +31,13 @@ export const getGithubInfo = async (req: Request, res: Response) => {
     // 各サービスを呼び出す
     const repositories = await getRepostiroryService(username, token);
     const contributions = await getContributionService(username, token);
-    const logs = await getActivityLogService(username, token);
+    const logs = await getActivityLogService(username, token, 10);
     const languages = await getUseLanguagesService(username, token);
 
-    const result = {repositories, contributions, logs, languages}
+    const result = { repositories, contributions, logs, languages };
 
     res.json(result);
-  } catch(error) {
+  } catch (error) {
     console.error("Error in getRepostitory:", error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -52,7 +52,7 @@ export const getRepository = async (req: Request, res: Response) => {
     const repositories = await getRepostiroryService(username, token);
 
     res.json(repositories);
-  } catch(error) {
+  } catch (error) {
     console.error("Error in getRepostitory:", error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -67,7 +67,7 @@ export const getContribution = async (req: Request, res: Response) => {
     const contributions = await getContributionService(username, token);
 
     res.json(contributions);
-  } catch(error) {
+  } catch (error) {
     console.error("Error in getContributions:", error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -79,10 +79,10 @@ export const getActivityLog = async (req: Request, res: Response) => {
   try {
     const { username, token } = await getUserGithubInfo(uuid);
 
-    const logs = await getActivityLogService(username, token);   
+    const logs = await getActivityLogService(username, token, 10);
 
     res.json(logs);
-  } catch(error) {
+  } catch (error) {
     console.error("Error in getActivityLog:", error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -97,7 +97,7 @@ export const getUseLanguage = async (req: Request, res: Response) => {
     const languages = await getUseLanguagesService(username, token);
 
     res.json(languages);
-  } catch(error) {
+  } catch (error) {
     console.error("Error in getUseLanguage:", error);
     res.status(500).json({ error: "Internal server error" });
   }
