@@ -1,28 +1,29 @@
 interface languageNode {
   name: string;
-};
+}
 
 interface commitNode {
   target: {
     history: {
+      edges: any;
       totalCount: number;
     };
   };
-};
+}
 
 interface repositoryNode {
   name: string;
   stargazerCount: number;
-  defaultBranchRef: commitNode
+  defaultBranchRef: commitNode;
   languages: {
-      edges: Array<{
-        node: languageNode
-        size: number;
-      }>;
+    edges: Array<{
+      node: languageNode;
+      size: number;
+    }>;
   };
   updatedAt: string;
-};
-  
+}
+
 export interface repositoryResponse {
   user: {
     repositories: {
@@ -31,7 +32,7 @@ export interface repositoryResponse {
       }>;
     };
   };
-};
+}
 
 export interface contributionResponse {
   user: {
@@ -52,16 +53,17 @@ export interface contributionResponse {
       };
     };
   };
-};
+}
 
 export interface MonthContribution {
   name: string;
   year: number;
   contributions: number;
-};
+}
 
 export interface activityResponse {
   user: {
+    issues: any;
     repositories: {
       edges: Array<{
         node: {
@@ -71,7 +73,7 @@ export interface activityResponse {
           };
           isFork: boolean;
           defaultBranchRef: commitNode;
-          createtAt: Date;
+          createdAt: Date;
         };
       }>;
     };
@@ -83,8 +85,9 @@ export interface activityResponse {
             login: string;
           };
         };
-        contrinbutions: {
+        contributions: {
           nodes: {
+            forEach(arg0: (contribution: any) => void): unknown;
             occurredAt: Date;
             pullRequest: {
               title: string;
@@ -95,4 +98,4 @@ export interface activityResponse {
       }>;
     };
   };
-};
+}

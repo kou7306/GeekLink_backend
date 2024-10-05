@@ -58,9 +58,10 @@ export const getContributionsQuery = `
 
 // ユーザーの直近のアクティビティログを取得
 export const getActivityLogQuery = `
-  query getActivityLog($username: String!) {
+query ($username: String!, $since: GitTimestamp!) {
   user(login: $username) {
-    repositories(first: 20, orderBy: { field: CREATED_AT, direction: DESC }) {
+    # リポジトリ情報
+    repositories(first: 100) {
       edges {
         node {
           name
@@ -68,37 +69,69 @@ export const getActivityLogQuery = `
             login
           }
           isFork
+          createdAt
+          # デフォルトブランチでのコミット履歴を取得
           defaultBranchRef {
             target {
               ... on Commit {
-                history {
+                history(since: $since, first: 100) {
                   totalCount
+                  edges {
+                    node {
+                      message
+                      committedDate
+                      url
+                    }
+                  }
                 }
               }
             }
           }
-          createdAt
         }
       }
     }
+    
+    # プルリクエストの履歴を取得
     contributionsCollection {
-      pullRequestContributionsByRepository(maxRepositories: 10) {
-          repository {
-            name
-            owner {
-              login
-            }
-          }
-          contributions(first: 30) {
-            nodes {
-              occurredAt
-              pullRequest {
-                title
-                url
+      pullRequestContributionsByRepository {
+        repository {
+          name
+        }
+        contributions(first: 100) { 
+          nodes {
+            pullRequest {
+              title
+              url
+              mergedAt
+              createdAt
+              reviews(first: 10) {
+                nodes {
+                  author {
+                    login
+                  }
+                  body
+                  submittedAt
+                }
               }
             }
           }
         }
+      }
+    }
+
+    # イシュー情報を取得
+    issues(first: 100) {
+      edges {
+        node {
+          title
+          url
+          createdAt
+          closedAt
+          repository {
+            name
+          }
+        }
+      }
     }
   }
 }
