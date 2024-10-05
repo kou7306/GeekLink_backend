@@ -133,3 +133,15 @@ export const getEventsByOwnerService = async (ownerId: string) => {
     throw error;
   }
 };
+
+export const getEventsByTypeService = async (eventType: string) => {
+  try {
+    return await prisma.event.findMany({
+      where: { event_type: eventType },
+      orderBy: { created_at: "desc" },
+    });
+  } catch (error) {
+    console.error(`Error getting events by type ${eventType}:`, error);
+    throw error;
+  }
+};

@@ -9,6 +9,7 @@ import {
   leaveEvent,
   searchEventsByTitle,
   getEventsByOwner,
+  getEventsByType,
 } from "../controllers/eventController";
 
 const router = Router();
@@ -22,5 +23,6 @@ router.delete("/:id", deleteEvent);
 router.put("/:id", updateEvent);
 router.post("/:id/join", joinEvent);
 router.post("/:id/leave", leaveEvent);
+router.get("/type/:type", getEventsByType);
 
 export default router;
