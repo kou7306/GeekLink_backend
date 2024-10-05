@@ -51,10 +51,13 @@ export const getQiitaActivity = async (req: Request, res: Response) => {
 };
 
 export const getAppActivity = async (req: Request, res: Response) => {
-  const { uuid, time } = req.body;
+  const { uuid, time } = req.query;
+  if (typeof uuid !== "string" || typeof time !== "string") {
+    res.status(400).json({ error: "Invalid parameters" });
+    return;
+  }
   try {
     const activity = await getUserAppActivityService(uuid, time);
-
     res.status(200).json(activity);
   } catch (error) {
     console.error("Error in getAppActivity:", error);
