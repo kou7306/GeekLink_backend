@@ -17,3 +17,12 @@ export interface Post {
   timestamp: Date; // 投稿の作成日時
   reactions: Reaction[]; // リアクションの配列
 }
+
+export type Timeline = {
+  post_id: string;
+  user_id: string;
+  title: string;
+  time: string;
+  comment: string;
+  created_at: Date;
+}

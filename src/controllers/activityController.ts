@@ -4,6 +4,7 @@ import {
   getActivityLogService,
 } from "../services/githubService";
 import { getQiitaUserActivityService } from "../services/qiitaService";
+import { getUserAppActivityService } from "../services/appService";
 
 export const getGithubActivity = async (req: Request, res: Response) => {
   // timeは何時間前までの活動を取得するか
@@ -45,6 +46,18 @@ export const getQiitaActivity = async (req: Request, res: Response) => {
     res.status(200).json(activity);
   } catch (error) {
     console.error("Error in getQiitaActivity:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getAppActivity = async (req: Request, res: Response) => {
+  const { uuid, time } = req.body;
+  try {
+    const activity = await getUserAppActivityService(uuid, time);
+
+    res.status(200).json(activity);
+  } catch (error) {
+    console.error("Error in getAppActivity:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
