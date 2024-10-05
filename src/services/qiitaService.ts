@@ -50,11 +50,9 @@ export const qiitaCallBackService = async (
   }
 };
 
-type TimePeriod = "1mo" | "1yr"; // 取得する期間のタイプ
-
 export const getQiitaUserActivityService = async (
   uuid: string,
-  period: TimePeriod
+  period: string
 ) => {
   try {
     // データベースからQiitaアクセストークンとユーザーIDを取得
@@ -86,15 +84,21 @@ export const getQiitaUserActivityService = async (
 
     // 現在の日付を取得
     const currentDate = new Date();
+    // 期間によってカットオフ日を設定
     let cutoffDate: Date;
 
-    // 期間によってカットオフ日を設定
     if (period === "1mo") {
       cutoffDate = new Date();
       cutoffDate.setMonth(currentDate.getMonth() - 1); // 1ヶ月前の日付
-    } else {
+    } else if (period === "1yr") {
       cutoffDate = new Date();
       cutoffDate.setFullYear(currentDate.getFullYear() - 1); // 1年前の日付
+    } else if (period === "all") {
+      // 全ての投稿を取得
+      cutoffDate = new Date(0); // 1970年1月1日を設定して全てのデータを取得
+    } else {
+      // 不正な期間指定に対するエラーハンドリング
+      throw new Error("Invalid period specified");
     }
 
     // 月毎の投稿数を計算
@@ -102,27 +106,27 @@ export const getQiitaUserActivityService = async (
     const postDetails: {
       title: any;
       url: any;
-      createdAt: string | number | Date;
+      date: Date;
     }[] = [];
 
-    posts.forEach(
-      (post: { created_at: string | number | Date; title: any; url: any }) => {
-        const postDate = new Date(post.created_at);
-        if (postDate >= cutoffDate) {
-          // カットオフ日以降の投稿のみを考慮
-          const month = postDate.getUTCMonth(); // 0-11の範囲
-          monthlyPostCounts[month] += 1;
+    posts.forEach((post: { created_at: Date; title: any; url: any }) => {
+      const postDate = new Date(post.created_at);
+      if (postDate >= cutoffDate) {
+        // カットオフ日以降の投稿のみを考慮
+        const month = postDate.getUTCMonth(); // 0-11の範囲
+        monthlyPostCounts[month] += 1;
 
-          // 投稿の詳細を追加
-          postDetails.push({
-            title: post.title,
-            url: post.url,
-            createdAt: post.created_at,
-            // 他の必要な情報を追加
-          });
-        }
+        // 投稿の詳細を追加
+        postDetails.push({
+          title: post.title,
+          url: post.url,
+          date: post.created_at,
+          // 他の必要な情報を追加
+        });
       }
-    );
+    });
+
+    console.log("postDetails", postDetails);
 
     // 結果を返す
     return {

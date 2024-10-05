@@ -7,13 +7,22 @@ import { getQiitaUserActivityService } from "../services/qiitaService";
 import { getUserAppActivityService } from "../services/appService";
 
 export const getGithubActivity = async (req: Request, res: Response) => {
-  const { uuid, time } = req.body;
+  // timeは何時間前までの活動を取得するか
+  const { uuid, time } = req.query;
+  console.log("uuid: ", typeof uuid);
+
+  if (typeof uuid !== "string" || typeof time !== "string") {
+    res.status(400).json({ error: "Invalid uuid parameter" });
+    console.log("Invalid uuid parameter");
+    return;
+  }
+
   try {
     const { username, token } = await getUserGithubInfo(uuid);
-
+    console.log("username: ", username);
     // 各サービスを呼び出す
     const logs = await getActivityLogService(username, token, time);
-
+    console.log("logs: ", logs);
     const result = { logs };
 
     res.json(result);
@@ -24,7 +33,12 @@ export const getGithubActivity = async (req: Request, res: Response) => {
 };
 
 export const getQiitaActivity = async (req: Request, res: Response) => {
-  const { uuid, period } = req.body;
+  // periodは"1mo" | "1yr";
+  const { uuid, period } = req.query;
+  if (typeof uuid !== "string" || typeof period !== "string") {
+    res.status(400).json({ error: "Invalid parameters" });
+    return;
+  }
   try {
     const activity = await getQiitaUserActivityService(uuid, period);
 

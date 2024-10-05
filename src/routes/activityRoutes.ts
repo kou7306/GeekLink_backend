@@ -7,8 +7,10 @@ import {
 
 const router = Router();
 
-router.post("/github", getGithubActivity);
-router.post("/qiita", getQiitaActivity);
+
+router.get("/github", getGithubActivity);
+router.get("/qiita", getQiitaActivity);
 router.post("/app", getAppActivity);
+
 
 export default router;
