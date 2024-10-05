@@ -82,19 +82,19 @@ export const getDailyRankingService = async () => {
   try {
     const contribution = await prisma.dailyGithubContributionRanking.findMany({
       orderBy: {
-        rank: 'desc'
+        rank: 'asc'
       }
     });
 
     const star = await prisma.dailyGithubContributionStarRanking.findMany({
       orderBy: {
-        rank: 'desc'
+        rank: 'asc'
       }
     });
 
     const qiita = await prisma.dailyQiitaRanking.findMany({
       orderBy: {
-        rank: 'desc'
+        rank: 'asc'
       }
     });
 
@@ -120,19 +120,19 @@ export const getWeeklyRankingService = async () => {
   try {
     const contribution = await prisma.weeklyGithubContributionRanking.findMany({
       orderBy: {
-        rank: 'desc'
+        rank: 'asc'
       }
     });
 
     const star = await prisma.weeklyGithubContributionStarRanking.findMany({
       orderBy: {
-        rank: 'desc'
+        rank: 'asc'
       }
     });
 
     const qiita = await prisma.weeklyQiitaRanking.findMany({
       orderBy: {
-        rank: 'desc'
+        rank: 'asc'
       }
     });
 
@@ -158,19 +158,19 @@ export const getMonthlyRankingService = async () => {
   try {
     const contribution = await prisma.monthlyGithubContributionRanking.findMany({
       orderBy: {
-        rank: 'desc'
+        rank: 'asc'
       }
     });
 
     const star = await prisma.monthlyGithubContributionStarRanking.findMany({
       orderBy: {
-        rank: 'desc'
+        rank: 'asc'
       }
     });
 
     const qiita = await prisma.monthlyQiitaRanking.findMany({
       orderBy: {
-        rank: 'desc'
+        rank: 'asc'
       }
     });
 
