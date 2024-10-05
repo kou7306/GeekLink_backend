@@ -1,9 +1,23 @@
 import { Request, Response } from "express";
 import {
+  getAllRankingService,
   getDailyRankingService,
   getWeeklyRankingService,
   getMonthlyRankingService
 } from "../services/rankingService";
+
+
+// 全てのランキングを取得(上位5件)
+export const getAllRanking = async (req: Request, res: Response) => {
+  try {
+    const ranking = await getAllRankingService();
+
+    res.json(ranking);
+  } catch(error) {
+    console.error("Error in getRepostitory:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 
 // デイリーランキングを取得
 export const getDailyRanking = async (req: Request, res: Response) => {
