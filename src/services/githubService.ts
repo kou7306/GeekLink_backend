@@ -207,7 +207,6 @@ export const getActivityLogService = async (
   const sinceDate = new Date();
   sinceDate.setUTCHours(sinceDate.getUTCHours() - hoursBack); // UTCでの時間を計算
   const sinceISOString = sinceDate.toISOString(); // ISO形式に変換
-  console.log(typeof sinceISOString);
 
   // GraphQLクエリを実行
   const response = await graphql(
@@ -245,41 +244,44 @@ export const getActivityLogService = async (
     });
 
   // プルリクエストの情報を追加
-  typedResponse.user.contributionsCollection.pullRequestContributionsByRepository.forEach(
-    (repo) => {
-      const repoName = repo.repository.name;
-      repo.contributions.nodes.forEach((contribution: any) => {
+  typedResponse.user.contributionsCollection.pullRequestContributionsByRepository.forEach((repo) => {
+    const repoName = repo.repository.name;
+    repo.contributions.nodes.forEach((contribution: any) => {
+      const pullRequestDate = contribution.pullRequest.createdAt;
+      if (new Date(pullRequestDate) >= sinceDate) {
         activities.push({
           type: "pullRequest",
           repository: repoName,
           title: contribution.pullRequest.title,
           url: contribution.pullRequest.url,
           mergedAt: contribution.pullRequest.mergedAt,
-          date: contribution.pullRequest.createdAt,
+          date: pullRequestDate,
         });
-      });
-    }
-  );
+      }
+    });
+  });
 
   // イシューの情報を追加
   typedResponse.user.issues.edges.forEach((edge: { node: any }) => {
     const issue = edge.node;
-    activities.push({
-      type: "issue",
-      repository: issue.repository.name,
-      title: issue.title,
-      url: issue.url,
-      createdAt: issue.createdAt,
-      closedAt: issue.closedAt,
-      date: issue.createdAt,
-    });
+    if (new Date(issue.createdAt) >= sinceDate) {
+      activities.push({
+        type: "issue",
+        repository: issue.repository.name,
+        title: issue.title,
+        url: issue.url,
+        createdAt: issue.createdAt,
+        closedAt: issue.closedAt,
+        date: issue.createdAt,
+      });
+    }
   });
 
   // レビューの情報を追加
-  typedResponse.user.contributionsCollection.pullRequestContributionsByRepository.forEach(
-    (repo) => {
-      repo.contributions.nodes.forEach((contribution: any) => {
-        contribution.pullRequest.reviews.nodes.forEach((review: any) => {
+  typedResponse.user.contributionsCollection.pullRequestContributionsByRepository.forEach((repo) => {
+    repo.contributions.nodes.forEach((contribution: any) => {
+      contribution.pullRequest.reviews.nodes.forEach((review: any) => {
+        if (new Date(review.submittedAt) >= sinceDate) {
           activities.push({
             type: "review",
             pullRequestTitle: contribution.pullRequest.title,
@@ -288,10 +290,10 @@ export const getActivityLogService = async (
             reviewBody: review.body,
             date: review.submittedAt,
           });
-        });
+        }
       });
-    }
-  );
+    });
+  });
 
   // アクティビティを日付でソート（新しい順）
   const sortedActivities = activities.sort(
