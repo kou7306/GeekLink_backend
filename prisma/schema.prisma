@@ -41,6 +41,7 @@ model users {
   image_url           String?
   qiita_access_token  String?
   github_access_token String?
+  github_username     String?
   Event               Event[]
 
   @@schema("public")
@@ -416,6 +417,134 @@ model auth_users {
   @@index([is_anonymous])
   @@map("users")
   @@schema("auth")
+}
+
+model DailyGithubContributionRanking {
+  id                 BigInt    @id @default(autoincrement())
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime? @default(now()) @db.Timestamp(6)
+  user_id            String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contribution_count Int?
+  rank               Int?
+
+  @@schema("public")
+}
+
+model DailyGithubContributionStarRanking {
+  id          BigInt    @id @default(autoincrement())
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+  user_id     String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  total_stars Int?
+  rank        Int?
+
+  @@schema("public")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model DailyQiitaRanking {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  user_id    String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  score      Int?
+  rank       Int?
+
+  @@schema("public")
+}
+
+model MonthlyGithubContributionRanking {
+  id                 BigInt    @id @default(autoincrement())
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime? @default(now()) @db.Timestamptz(6)
+  user_id            String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contribution_count Int?
+  rank               Int?
+
+  @@schema("public")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model MonthlyGithubContributionStarRanking {
+  id          BigInt    @id @default(autoincrement())
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+  user_id     String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  total_stars Int?
+  rank        Int?
+
+  @@schema("public")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model MonthlyQiitaRanking {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  user_id    String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  score      Int?
+  rank       Int?
+
+  @@schema("public")
+}
+
+model WeeklyGithubContributionRanking {
+  id                 BigInt    @id @default(autoincrement())
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime? @default(now()) @db.Timestamptz(6)
+  user_id            String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contribution_count Int?
+  rank               Int?
+
+  @@schema("public")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model WeeklyGithubContributionStarRanking {
+  id          BigInt    @id @default(autoincrement())
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+  user_id     String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  total_stars Int?
+  rank        Int?
+
+  @@schema("public")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model WeeklyQiitaRanking {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  user_id    String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  score      Int?
+  rank       Int?
+
+  @@schema("public")
+}
+
+model Timeline {
+  post_id          String             @id(map: "timeline_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  user_id          String?
+  content          String?
+  TimelineReaction TimelineReaction[]
+
+  @@index([user_id], map: "idx_timeline_user_id")
+  @@schema("public")
+}
+
+model TimelineReaction {
+  reaction_id String    @id(map: "timeline_reaction_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  post_id     String?   @db.Uuid
+  user_id     String?
+  emoji       String?
+  Timeline    Timeline? @relation(fields: [post_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_timeline_reaction_post")
+
+  @@index([post_id], map: "idx_timeline_reaction_post_id")
+  @@index([user_id], map: "idx_timeline_reaction_user_id")
+  @@schema("public")
 }
 
 enum aal_level {
