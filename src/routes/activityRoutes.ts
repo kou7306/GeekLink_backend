@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { getActivityLog } from "../controllers/githubController";
+import { getGithubActivity } from "../controllers/activityController";
 
 const router = Router();
 
-router.post("/github", getActivityLog);
+router.post("/github", getGithubActivity);
 
 export default router;

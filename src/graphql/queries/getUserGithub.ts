@@ -60,6 +60,7 @@ export const getContributionsQuery = `
 export const getActivityLogQuery = `
 query ($username: String!, $since: GitTimestamp!) {
   user(login: $username) {
+    # リポジトリ情報
     repositories(first: 100) {
       edges {
         node {
@@ -69,6 +70,7 @@ query ($username: String!, $since: GitTimestamp!) {
           }
           isFork
           createdAt
+          # デフォルトブランチでのコミット履歴を取得
           defaultBranchRef {
             target {
               ... on Commit {
@@ -88,6 +90,8 @@ query ($username: String!, $since: GitTimestamp!) {
         }
       }
     }
+    
+    # プルリクエストの履歴を取得
     contributionsCollection {
       pullRequestContributionsByRepository {
         repository {
@@ -100,11 +104,22 @@ query ($username: String!, $since: GitTimestamp!) {
               url
               mergedAt
               createdAt
+              reviews(first: 10) {
+                nodes {
+                  author {
+                    login
+                  }
+                  body
+                  submittedAt
+                }
+              }
             }
           }
         }
       }
     }
+
+    # イシュー情報を取得
     issues(first: 100) {
       edges {
         node {
@@ -120,7 +135,6 @@ query ($username: String!, $since: GitTimestamp!) {
     }
   }
 }
-
 `;
 
 // ユーザーの使用言語を取得

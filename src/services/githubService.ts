@@ -208,6 +208,7 @@ export const getActivityLogService = async (
   sinceDate.setUTCHours(sinceDate.getUTCHours() - hoursBack); // UTCでの時間を計算
   const sinceISOString = sinceDate.toISOString(); // ISO形式に変換
   console.log(typeof sinceISOString);
+
   // GraphQLクエリを実行
   const response = await graphql(
     getActivityLogQuery,
@@ -222,75 +223,82 @@ export const getActivityLogService = async (
     throw new Error("Invalid response from GitHub API");
   }
 
-  const formattedRepositories = (
-    response as activityResponse
-  ).user.repositories.edges
+  const activities: any[] = [];
+
+  // コミットの情報を追加
+  typedResponse.user.repositories.edges
     .filter((edge) => edge.node.owner.login === username && !edge.node.isFork)
-    .map((edge) => {
+    .forEach((edge) => {
       const node = edge.node;
-      return {
-        name: node.name,
-        owner: node.owner.login,
-        isFork: node.isFork,
-        commitCount: node.defaultBranchRef.target.history.totalCount,
-        createdAt: node.createdAt,
-        commits: node.defaultBranchRef.target.history.edges.map(
-          (commit: {
-            node: { message: any; committedDate: any; url: any };
-          }) => ({
-            message: commit.node.message,
-            committedDate: commit.node.committedDate,
-            url: commit.node.url,
-          })
-        ),
-      };
+      const commits = node.defaultBranchRef.target.history.edges.map(
+        (commit: {
+          node: { message: string; committedDate: string; url: string };
+        }) => ({
+          type: "commit",
+          repository: node.name,
+          message: commit.node.message,
+          date: commit.node.committedDate,
+          url: commit.node.url,
+        })
+      );
+      activities.push(...commits);
     });
 
-  const contributions: any[] = [];
-  const issues: any[] = [];
-
-  // プルリクエストの情報を取得
-  (
-    response as activityResponse
-  ).user.contributionsCollection.pullRequestContributionsByRepository.forEach(
+  // プルリクエストの情報を追加
+  typedResponse.user.contributionsCollection.pullRequestContributionsByRepository.forEach(
     (repo) => {
       const repoName = repo.repository.name;
       repo.contributions.nodes.forEach((contribution: any) => {
-        contributions.push({
-          name: repoName,
+        activities.push({
+          type: "pullRequest",
+          repository: repoName,
           title: contribution.pullRequest.title,
           url: contribution.pullRequest.url,
           mergedAt: contribution.pullRequest.mergedAt,
-          createdAt: contribution.pullRequest.createdAt,
+          date: contribution.pullRequest.createdAt,
         });
       });
     }
   );
 
-  // イシューの情報を取得
-  (response as activityResponse).user.issues.edges.forEach(
-    (edge: { node: any }) => {
-      const issue = edge.node;
-      issues.push({
-        title: issue.title,
-        url: issue.url,
-        createdAt: issue.createdAt,
-        closedAt: issue.closedAt,
-        repository: issue.repository.name,
+  // イシューの情報を追加
+  typedResponse.user.issues.edges.forEach((edge: { node: any }) => {
+    const issue = edge.node;
+    activities.push({
+      type: "issue",
+      repository: issue.repository.name,
+      title: issue.title,
+      url: issue.url,
+      createdAt: issue.createdAt,
+      closedAt: issue.closedAt,
+      date: issue.createdAt,
+    });
+  });
+
+  // レビューの情報を追加
+  typedResponse.user.contributionsCollection.pullRequestContributionsByRepository.forEach(
+    (repo) => {
+      repo.contributions.nodes.forEach((contribution: any) => {
+        contribution.pullRequest.reviews.nodes.forEach((review: any) => {
+          activities.push({
+            type: "review",
+            pullRequestTitle: contribution.pullRequest.title,
+            repository: repo.repository.name,
+            reviewAuthor: review.author.login,
+            reviewBody: review.body,
+            date: review.submittedAt,
+          });
+        });
       });
     }
   );
 
-  // contributionsを日付でソート
-  const sortedContributions = contributions.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  // アクティビティを日付でソート（新しい順）
+  const sortedActivities = activities.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
-  return {
-    sortRepositories: formattedRepositories,
-    contributions: sortedContributions,
-    issues: issues,
-  };
+  return sortedActivities;
 };
 
 // ユーザーの使用言語量(割合)を取得
