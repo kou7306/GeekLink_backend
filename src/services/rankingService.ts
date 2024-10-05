@@ -8,6 +8,7 @@ const convertIdToString = (data: any[]) => {
   }));
 };
 
+// 全てのランキングを取得(上位5件)
 export const getAllRankingService = async () => {
   try {
     const dailyContribution = await prisma.dailyGithubContributionRanking.findMany({
@@ -76,6 +77,7 @@ export const getAllRankingService = async () => {
   }
 }
 
+// デイリーランキングを取得
 export const getDailyRankingService = async () => {
   try {
     const contribution = await prisma.dailyGithubContributionRanking.findMany({
@@ -97,20 +99,9 @@ export const getDailyRankingService = async () => {
     });
 
     // IDがBigInt型の為, string型に変換
-    const formattedContribution = contribution.map((item) => ({
-      ...item,
-      id: item.id.toString(),
-    }));
-
-    const formattedStar = star.map((item) => ({
-      ...item,
-      id: item.id.toString(),
-    }));
-
-    const formattedQiita = qiita.map((item) => ({
-      ...item,
-      id: item.id.toString(),
-    }));
+    const formattedContribution = convertIdToString(contribution);
+    const formattedStar = convertIdToString(star);
+    const formattedQiita = convertIdToString(qiita);
 
     const result = {
       contribution: formattedContribution,
@@ -124,6 +115,7 @@ export const getDailyRankingService = async () => {
   }
 };
 
+// ウィークリーランキングを取得
 export const getWeeklyRankingService = async () => {
   try {
     const contribution = await prisma.weeklyGithubContributionRanking.findMany({
@@ -145,20 +137,9 @@ export const getWeeklyRankingService = async () => {
     });
 
     // IDがBigInt型の為, string型に変換
-    const formattedContribution = contribution.map((item) => ({
-      ...item,
-      id: item.id.toString(),
-    }));
-
-    const formattedStar = star.map((item) => ({
-      ...item,
-      id: item.id.toString(),
-    }));
-
-    const formattedQiita = qiita.map((item) => ({
-      ...item,
-      id: item.id.toString(),
-    }));
+    const formattedContribution = convertIdToString(contribution);
+    const formattedStar = convertIdToString(star);
+    const formattedQiita = convertIdToString(qiita);
 
     const result = {
       contribution: formattedContribution,
@@ -172,6 +153,7 @@ export const getWeeklyRankingService = async () => {
   }
 };
 
+// マンスリーランキングを取得
 export const getMonthlyRankingService = async () => {
   try {
     const contribution = await prisma.monthlyGithubContributionRanking.findMany({
@@ -193,20 +175,9 @@ export const getMonthlyRankingService = async () => {
     });
 
     // IDがBigInt型の為, string型に変換
-    const formattedContribution = contribution.map((item) => ({
-      ...item,
-      id: item.id.toString(),
-    }));
-
-    const formattedStar = star.map((item) => ({
-      ...item,
-      id: item.id.toString(),
-    }));
-
-    const formattedQiita = qiita.map((item) => ({
-      ...item,
-      id: item.id.toString(),
-    }));
+    const formattedContribution = convertIdToString(contribution);
+    const formattedStar = convertIdToString(star);
+    const formattedQiita = convertIdToString(qiita);
 
     const result = {
       contribution: formattedContribution,
