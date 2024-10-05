@@ -9,6 +9,7 @@ import {
   leaveEventService,
   searchEventsByTitleService,
   getEventsByOwnerService,
+  getEventsByTypeService,
 } from "../services/eventService";
 import { Event } from "../models/eventModel";
 
@@ -125,6 +126,20 @@ export const getEventsByOwner = async (req: Request, res: Response) => {
     res.status(200).json(events);
   } catch (error) {
     console.error("Error in getEventsByOwner:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getEventsByType = async (req: Request, res: Response) => {
+  try {
+    const eventType = req.params.type.toUpperCase();
+    if (eventType !== "EVENT" && eventType !== "HACKATHON") {
+      return res.status(400).json({ error: "Invalid event type. Must be 'EVENT' or 'HACKATHON'." });
+    }
+    const events = await getEventsByTypeService(eventType);
+    res.status(200).json(events);
+  } catch (error) {
+    console.error("Error in getEventsByType:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
