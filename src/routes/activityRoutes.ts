@@ -4,7 +4,7 @@ import { getQiitaActivity } from "../controllers/activityController";
 
 const router = Router();
 
-router.post("/github", getGithubActivity);
-router.post("/qiita", getQiitaActivity);
+router.get("/github", getGithubActivity);
+router.get("/qiita", getQiitaActivity);
 
 export default router;
