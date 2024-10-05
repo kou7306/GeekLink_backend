@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { Post, Reaction } from "../models/timelineModel";
+import { Post, Reaction } from "../models/timelineModel"; // 型定義は適宜修正してください
 
 const prisma = new PrismaClient();
 
@@ -21,7 +21,9 @@ export const getPostService = async (
   const formattedPosts: Post[] = posts.map((post) => ({
     id: post.post_id,
     userId: post.user_id || "",
-    content: post.content || "",
+    title: post.title || "",
+    time: post.time || "",
+    comment: post.comment || "",
     timestamp: post.created_at,
     reactions: post.TimelineReaction.map((reaction) => ({
       reactionId: reaction.reaction_id,
@@ -37,19 +39,25 @@ export const getPostService = async (
 
 export const createPostService = async (
   userId: string,
-  content: string
+  title: string,
+  time: string,
+  comment: string
 ): Promise<Post> => {
   const newPost = await prisma.timeline.create({
     data: {
       user_id: userId,
-      content,
+      title: title,
+      time: time,
+      comment: comment,
     },
   });
 
   return {
     id: newPost.post_id,
     userId: newPost.user_id || "",
-    content: newPost.content || "",
+    title: newPost.title || "",
+    time: newPost.time || "",
+    comment: newPost.comment || "",
     timestamp: newPost.created_at,
     reactions: [],
   };
@@ -97,7 +105,9 @@ export const addReactionService = async (
   return {
     id: updatedPost.post_id,
     userId: updatedPost.user_id || "",
-    content: updatedPost.content || "",
+    title: updatedPost.title || "",
+    time: updatedPost.time || "",
+    comment: updatedPost.comment || "",
     timestamp: updatedPost.created_at,
     reactions: updatedPost.TimelineReaction.map((reaction) => ({
       reactionId: reaction.reaction_id,

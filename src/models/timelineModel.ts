@@ -11,7 +11,9 @@ export interface Reaction {
 export interface Post {
   id: string; // 投稿のID
   userId: string; // 投稿を作成したユーザーのID
-  content: string; // 投稿の内容
+  title: string; // 投稿のタイトル
+  time: string; // やった時間
+  comment: string; // 投稿の内容
   timestamp: Date; // 投稿の作成日時
   reactions: Reaction[]; // リアクションの配列
 }

@@ -527,7 +527,9 @@ model Timeline {
   post_id          String             @id(map: "timeline_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at       DateTime           @default(now()) @db.Timestamptz(6)
   user_id          String?
-  content          String?
+  title            String?
+  time             String?
+  comment          String?
   TimelineReaction TimelineReaction[]
 
   @@index([user_id], map: "idx_timeline_user_id")

@@ -21,18 +21,36 @@ export const getPosts = async (req: Request, res: Response) => {
 };
 
 export const createPost = async (req: Request, res: Response) => {
-  const { uuid, content } = req.body;
-  console.log("Received data:", req.body);
+  // 小文字で `postData` を取得
+  const { uuid, postData } = req.body;
+
+  // バリデーション: 必要なフィールドが存在するか確認
+  if (
+    !uuid ||
+    !postData ||
+    !postData.title ||
+    !postData.time ||
+    !postData.comment
+  ) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
   try {
-    const users = await createPostService(uuid, content);
-    res.status(200).json(users);
+    // サービス関数に引数を渡す
+    const newPost = await createPostService(
+      uuid,
+      postData.title,
+      postData.time,
+      postData.comment
+    );
+    res.status(201).json(newPost); // 作成したポストを返す
   } catch (error) {
-    res.status(500).json({ error: "Error fetching liked users" });
+    console.error("Error creating post:", error); // エラーログを追加
+    res.status(500).json({ error: "Error creating post" });
   }
 };
 
 export const addReaction = async (req: Request, res: Response) => {
-  console.log("Received data:", req.body);
   const { postId, userId, emoji } = req.body; // userId を追加
 
   try {
