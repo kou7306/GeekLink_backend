@@ -15,7 +15,7 @@ export const getAllRanking = async (req: Request, res: Response) => {
 
     res.json(ranking);
   } catch(error) {
-    console.error("Error in getRepostitory:", error);
+    console.error("Error in getAllRanking:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -39,7 +39,7 @@ export const getDailyRanking = async (req: Request, res: Response) => {
 
     res.json(dailyRanking);
   } catch (error) {
-    console.error("Error in getRepostitory:", error);
+    console.error("Error in getDailyRanking:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -51,7 +51,7 @@ export const getWeeklyRanking = async (req: Request, res: Response) => {
 
     res.json(dailyRanking);
   } catch (error) {
-    console.error("Error in getRepostitory:", error);
+    console.error("Error in getWeeklyRanking:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -63,7 +63,7 @@ export const getMonthlyRanking = async (req: Request, res: Response) => {
 
     res.json(dailyRanking);
   } catch (error) {
-    console.error("Error in getRepostitory:", error);
+    console.error("Error in getMonthlyRanking:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
