@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import {
   getAllRankingService,
+  getTopRankingService,
   getDailyRankingService,
   getWeeklyRankingService,
-  getMonthlyRankingService
+  getMonthlyRankingService,
 } from "../services/rankingService";
 
 
@@ -18,6 +19,18 @@ export const getAllRanking = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+// トップ画面用にデイリーコントリビューション数ランキング上位3人を取得
+export const getTopRanking = async (req:Request, res: Response) => {
+  try {
+    const topRanking = await getTopRankingService();
+
+    res.json(topRanking);
+  } catch (error) {
+    console.error("Error in getTopRanking:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 // デイリーランキングを取得
 export const getDailyRanking = async (req: Request, res: Response) => {

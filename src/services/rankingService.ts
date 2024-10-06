@@ -77,6 +77,22 @@ export const getAllRankingService = async () => {
   }
 }
 
+// トップ画面用にデイリーコントリビューション数ランキング上位3人を取得
+export const getTopRankingService = async () => {
+  try {
+    const topRanking = await prisma.dailyGithubContributionRanking.findMany({
+      where: {rank: {lte: 5}},
+      orderBy: {rank: 'asc'},
+    });
+
+    const formattedTopRanking = convertIdToString(topRanking);
+
+    return formattedTopRanking;
+  } catch(error: any) {
+    throw new Error(error.message);
+  }
+};
+
 // デイリーランキングを取得
 export const getDailyRankingService = async () => {
   try {
