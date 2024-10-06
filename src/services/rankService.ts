@@ -111,7 +111,6 @@ const calculateUserLevel = (contributions: number, totalQiitaPosts: number, tota
   const postPoints = totalAppPosts * 6.0;
 
   const totalPoints = contributionPoints + qiitaPoints + eventPoints + postPoints;
-  console.log(totalPoints)
 
   // 経験値の上限は10,000(1レベルあたり100)
   // 次のレベルまでの経験値も返す   
@@ -137,7 +136,7 @@ const calculateUserLevel = (contributions: number, totalQiitaPosts: number, tota
 
 
 const calculateUserRank = (level: number): string => {
-  const ranks = ["Master", "DiamondI", "DiamondⅡ", "DiamondⅢ", "PlatinumI", "PlatinumⅡ", "PlatinumⅢ", "GoldI", "GoldⅡ", "GoldⅢ", "SilverI", "SilverⅡ", "SilverⅢ", "BronzeI", "BronzeⅡ", "BronzeⅢ", "Normal"];
+  const ranks = ["Legend", "MasterI", "MasterⅡ", "MasterⅢ", "DiamondI", "DiamondⅡ", "DiamondⅢ", "GoldI", "GoldⅡ", "GoldⅢ", "SilverI", "SilverⅡ", "SilverⅢ", "BronzeI", "BronzeⅡ", "BronzeⅢ"];
 
   switch (true) {
     case (level >= 95):
@@ -160,19 +159,17 @@ const calculateUserRank = (level: number): string => {
       return ranks[8];
     case (level >= 50):
       return ranks[9];
-    case (level >= 45):
-      return ranks[10];
     case (level >= 40):
-      return ranks[11];
+      return ranks[10];
     case (level >= 30):
-      return ranks[12];
+      return ranks[11];
     case (level >= 20):
-      return ranks[13];
+      return ranks[12];
     case (level >= 10):
-      return ranks[14];
+      return ranks[13];
     case (level >= 5):
-      return ranks[15];
+      return ranks[14];
     default:
-      return ranks[16];
+      return ranks[15];
   }
 };
