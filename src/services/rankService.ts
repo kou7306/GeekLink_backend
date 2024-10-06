@@ -10,12 +10,18 @@ export const getUserRankService = async (uuid: string) => {
     // レベルの計算に必要な情報の取得
     // 総コントリビューション数の取得
     const { username, token } = await getUserGithubInfo(uuid);
-    const contributionResponse = await graphql(
-        getTotalContributionsQuery,
-        { username },
-        token
-    );
-    const contributions = (contributionResponse as contributionResponse).user.contributionsCollection.contributionCalendar.totalContributions;
+    const contributions = await (async () => {
+      if (username && token) {
+        const contributionResponse = await graphql(
+          getTotalContributionsQuery,
+          { username },
+          token
+        );
+        return (contributionResponse as contributionResponse).user.contributionsCollection.contributionCalendar.totalContributions;
+      } else {
+        return 0;
+      }
+    })();
 
     // Qiitaの総投稿数を取得
     const user = await prisma.users.findUnique({
@@ -27,21 +33,27 @@ export const getUserRankService = async (uuid: string) => {
     });
   
     if (!user) {
-    throw new Error("User not found");
+      throw new Error("User not found");
     }
 
     const { qiita_access_token, qiita } = user;
   
     // ユーザーの投稿情報を取得
-    const response = await axios.get(
-      `https://qiita.com/api/v2/users/${qiita}/items`,
-      {
-        headers: {
-        Authorization: `Bearer ${qiita_access_token}`,
-        },
+    const totalQiitaPosts = await (async () => {
+      if (qiita && qiita_access_token) {
+        const response = await axios.get(
+          `https://qiita.com/api/v2/users/${qiita}/items`,
+          {
+            headers: {
+              Authorization: `Bearer ${qiita_access_token}`,
+            },
+          }
+        );
+        return response.data.length;
+      } else {
+        return 0;
       }
-    );
-    const totalQiitaPosts = response.data.length;
+    })();
 
     // イベントの投稿数を取得
     const ownerEvents = await prisma.event.findMany({
@@ -58,17 +70,6 @@ export const getUserRankService = async (uuid: string) => {
     // レベルの計算ロジック
     const { level, nextLevelPoints } = calculateUserLevel(contributions, totalQiitaPosts, totalOwnerEvents, totalAppPosts);
 
-    // レベル90以上の人
-    console.log("Lv90目安：Level",calculateUserLevel(1900,7,3,50))
-    // レベル70ぐらいの人
-    console.log("Lv70目安：Level",calculateUserLevel(1300,5,2,45))
-    // レベル50ぐらいの人
-    console.log("Lv50目安：Level",calculateUserLevel(800,3,1,40))
-    // レベル30ぐらいの人
-    console.log("Lv30目安：Level",calculateUserLevel(400,2,0,30))
-    // レベル10ぐらいの人
-    console.log("Lv10目安：Level",calculateUserLevel(100,1,0,20))
-
     // ランクの計算ロジック
     const rank = calculateUserRank(level);
 
@@ -83,6 +84,7 @@ export const getUserRankService = async (uuid: string) => {
     throw new Error(error.message);
   }
 }
+
 
 const calculateUserLevel = (contributions: number, totalQiitaPosts: number, totalOwnerEvents: number, totalAppPosts: number): { level: number, nextLevelPoints: number } => {
   // 各要素に応じて経験値を計算
@@ -131,6 +133,7 @@ const calculateUserLevel = (contributions: number, totalQiitaPosts: number, tota
 
   return result;
 };
+
 
 const calculateUserRank = (level: number): string => {
   const ranks = ["Master", "DiamondI", "DiamondⅡ", "DiamondⅢ", "PlatinumI", "PlatinumⅡ", "PlatinumⅢ", "GoldI", "GoldⅡ", "GoldⅢ", "SilverI", "SilverⅡ", "SilverⅢ", "BronzeI", "BronzeⅡ", "BronzeⅢ", "Normal"];
