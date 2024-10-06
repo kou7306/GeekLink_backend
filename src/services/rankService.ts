@@ -58,6 +58,17 @@ export const getUserRankService = async (uuid: string) => {
     // レベルの計算ロジック
     const { level, nextLevelPoints } = calculateUserLevel(contributions, totalQiitaPosts, totalOwnerEvents, totalAppPosts);
 
+    // レベル90以上の人
+    console.log("Lv90目安：Level",calculateUserLevel(1900,7,3,50))
+    // レベル70ぐらいの人
+    console.log("Lv70目安：Level",calculateUserLevel(1300,5,2,45))
+    // レベル50ぐらいの人
+    console.log("Lv50目安：Level",calculateUserLevel(800,3,1,40))
+    // レベル30ぐらいの人
+    console.log("Lv30目安：Level",calculateUserLevel(400,2,0,30))
+    // レベル10ぐらいの人
+    console.log("Lv10目安：Level",calculateUserLevel(100,1,0,20))
+
     // ランクの計算ロジック
     const rank = calculateUserRank(level);
 
@@ -74,34 +85,36 @@ export const getUserRankService = async (uuid: string) => {
 }
 
 const calculateUserLevel = (contributions: number, totalQiitaPosts: number, totalOwnerEvents: number, totalAppPosts: number): { level: number, nextLevelPoints: number } => {
-  let points = 0;
-
   // 各要素に応じて経験値を計算
   // コントリビューション数が増えるほど経験値の上がり幅は小さく⇒コントリビューション数が少ない, 開発初心者は上がり幅を大きく 
-  if (contributions >= 1500) {
-    points += contributions * 5.0;
-  } else if (contributions >= 1000) {
-    points += contributions * 5.5;
-  } else if (contributions >= 750) {
-    points += contributions * 6.0;
-  } else if (contributions >= 500) {
-    points += contributions * 6.5;
-  } else if (contributions >= 300) {
-    points += contributions * 7.0;
-  } else if (contributions >= 150) {
-    points += contributions * 8.0;
-  } else {
-    points += contributions * 9.0;
-  }
-  points += totalQiitaPosts * 20.0;
-  points += totalOwnerEvents * 20.0;
-  points += totalAppPosts * 6.0;
+  const contributionPoints = (() => {
+    if (contributions >= 1500) {
+      return contributions * 4.5;
+    } else if (contributions >= 1000) {
+      return contributions * 5.0;
+    } else if (contributions >= 750) {
+      return contributions * 6.0;
+    } else if (contributions >= 500) {
+      return contributions * 6.5;
+    } else if (contributions >= 300) {
+      return contributions * 7.0;
+    } else if (contributions >= 150) {
+      return contributions * 8.0;
+    } else {
+      return contributions * 9.0;
+    }
+  })();
+  const qiitaPoints = totalQiitaPosts * 20.0;
+  const eventPoints = totalOwnerEvents * 20.0;
+  const postPoints = totalAppPosts * 6.0;
+
+  const totalPoints = contributionPoints + qiitaPoints + eventPoints + postPoints;
 
   // 経験値の上限は10,000(1レベルあたり100)
   // 次のレベルまでの経験値も返す   
-  const nextLevelPoints = Math.floor(1000 - (points % 1000));
+  const nextLevelPoints = Math.floor(1000 - (totalPoints % 1000));
 
-  const level = Math.floor(points / 100);
+  const level = Math.floor(totalPoints / 100);
 
   // レベルが100以上の場合は100を返す(最大が100)  
   if (level >= 100) {
