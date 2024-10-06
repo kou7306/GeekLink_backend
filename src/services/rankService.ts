@@ -111,10 +111,11 @@ const calculateUserLevel = (contributions: number, totalQiitaPosts: number, tota
   const postPoints = totalAppPosts * 6.0;
 
   const totalPoints = contributionPoints + qiitaPoints + eventPoints + postPoints;
+  console.log(totalPoints)
 
   // 経験値の上限は10,000(1レベルあたり100)
   // 次のレベルまでの経験値も返す   
-  const nextLevelPoints = Math.floor(1000 - (totalPoints % 1000));
+  const nextLevelPoints = Math.floor(100 - (totalPoints % 100));
 
   const level = Math.floor(totalPoints / 100);
 
