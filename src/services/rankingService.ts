@@ -13,11 +13,12 @@ const getTopRankingNames = async (topRanking: any[]) => {
     topRanking.map(async (ranking) => {
       const user = await prisma.users.findUnique({
         where: { user_id: ranking.user_id ?? undefined },
-        select: { name: true },
+        select: { name: true, image_url:true },
       });
       return {
         ...ranking,
         name: user?.name || 'Unknown',
+        image: user?.image_url || '/img/default_icon.png'
       };
     })
   );
