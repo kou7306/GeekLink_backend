@@ -2,15 +2,13 @@ import { Router } from "express";
 import {
   getGithubActivity,
   getQiitaActivity,
-  getAppActivity
+  getAppActivity,
 } from "../controllers/activityController";
 
 const router = Router();
 
-
 router.get("/github", getGithubActivity);
 router.get("/qiita", getQiitaActivity);
-router.post("/app", getAppActivity);
-
+router.get("/app", getAppActivity);
 
 export default router;
