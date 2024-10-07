@@ -8,6 +8,21 @@ const convertIdToString = (data: any[]) => {
   }));
 };
 
+const getTopRankingNames = async (topRanking: any[]) => {
+  return await Promise.all(
+    topRanking.map(async (ranking) => {
+      const user = await prisma.users.findUnique({
+        where: { user_id: ranking.user_id ?? undefined },
+        select: { name: true },
+      });
+      return {
+        ...ranking,
+        name: user?.name || 'Unknown',
+      };
+    })
+  );
+};
+
 // 全てのランキングを取得(上位5件)
 export const getAllRankingService = async () => {
   try {
@@ -49,15 +64,15 @@ export const getAllRankingService = async () => {
     });
 
     // IDがBigInt型の為, string型に変換
-    const formatteddailyContribution = convertIdToString(dailyContribution);
-    const formatteddailyStar = convertIdToString(dailyStar);
-    const formatteddailyQiita = convertIdToString(dailyQiita);
-    const formattedweeklyContribution = convertIdToString(weeklyContribution);
-    const formattedweeklyStar = convertIdToString(weeklyStar);
-    const formattedweeklyQiita = convertIdToString(weeklyQiita);
-    const formattedmonthlyContribution = convertIdToString(monthlyContribution);
-    const formattedmonthlyStar = convertIdToString(monthlyStar);
-    const formattedmonthlyQiita = convertIdToString(monthlyQiita);
+    const formatteddailyContribution = convertIdToString(await getTopRankingNames(dailyContribution));
+    const formatteddailyStar = convertIdToString(await getTopRankingNames(dailyStar));
+    const formatteddailyQiita = convertIdToString(await getTopRankingNames(dailyQiita));
+    const formattedweeklyContribution = convertIdToString(await getTopRankingNames(weeklyContribution));
+    const formattedweeklyStar = convertIdToString(await getTopRankingNames(weeklyStar));
+    const formattedweeklyQiita = convertIdToString(await getTopRankingNames(weeklyQiita));
+    const formattedmonthlyContribution = convertIdToString(await getTopRankingNames(monthlyContribution));
+    const formattedmonthlyStar = convertIdToString(await getTopRankingNames(monthlyStar));
+    const formattedmonthlyQiita = convertIdToString(await getTopRankingNames(monthlyQiita));
 
     const result = {
       dailyContribution: formatteddailyContribution,
@@ -85,7 +100,7 @@ export const getTopRankingService = async () => {
       orderBy: {rank: 'asc'},
     });
 
-    const formattedTopRanking = convertIdToString(topRanking);
+    const formattedTopRanking = convertIdToString(await getTopRankingNames(topRanking));
 
     return formattedTopRanking;
   } catch(error: any) {
@@ -115,9 +130,9 @@ export const getDailyRankingService = async () => {
     });
 
     // IDがBigInt型の為, string型に変換
-    const formattedContribution = convertIdToString(contribution);
-    const formattedStar = convertIdToString(star);
-    const formattedQiita = convertIdToString(qiita);
+    const formattedContribution = convertIdToString(await getTopRankingNames(contribution));
+    const formattedStar = convertIdToString(await getTopRankingNames(star));
+    const formattedQiita = convertIdToString(await getTopRankingNames(qiita));
 
     const result = {
       contribution: formattedContribution,
@@ -153,9 +168,9 @@ export const getWeeklyRankingService = async () => {
     });
 
     // IDがBigInt型の為, string型に変換
-    const formattedContribution = convertIdToString(contribution);
-    const formattedStar = convertIdToString(star);
-    const formattedQiita = convertIdToString(qiita);
+    const formattedContribution = convertIdToString(await getTopRankingNames(contribution));
+    const formattedStar = convertIdToString(await getTopRankingNames(star));
+    const formattedQiita = convertIdToString(await getTopRankingNames(qiita));
 
     const result = {
       contribution: formattedContribution,
@@ -191,9 +206,9 @@ export const getMonthlyRankingService = async () => {
     });
 
     // IDがBigInt型の為, string型に変換
-    const formattedContribution = convertIdToString(contribution);
-    const formattedStar = convertIdToString(star);
-    const formattedQiita = convertIdToString(qiita);
+    const formattedContribution = convertIdToString(await getTopRankingNames(contribution));
+    const formattedStar = convertIdToString(await getTopRankingNames(star));
+    const formattedQiita = convertIdToString(await getTopRankingNames(qiita));
 
     const result = {
       contribution: formattedContribution,
