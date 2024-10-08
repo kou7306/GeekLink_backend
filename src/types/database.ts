@@ -3,6 +3,7 @@ import { User } from "../models/userModel";
 import { Message } from "../models/messageModel";
 import { Like } from "../models/likeModel";
 import { Event } from "../models/eventModel";
+import { Timeline } from "../models/timelineModel";
 
 export interface Database {
   public: {
@@ -21,6 +22,9 @@ export interface Database {
       };
       Event: {
         Row: Event;
+      };
+      Timeline: {
+        Row: Timeline;
       };
     };
   };

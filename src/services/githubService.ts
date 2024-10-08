@@ -147,65 +147,51 @@ export const getRepostiroryService = async (
   return repositories;
 };
 
-// ユーザーのコントリビューション数を取得
+// ユーザーの年間コントリビューション数を12個のリストで取得
 export const getContributionService = async (
   username: string | null,
   token: string | null
-) => {
+): Promise<number[]> => {
   const response = await graphql(getContributionsQuery, { username }, token);
 
   const contributionCalendar = (response as contributionResponse).user
     .contributionsCollection.contributionCalendar;
 
-  const { totalContributions, months, weeks } = contributionCalendar;
+  const { weeks } = contributionCalendar;
 
-  const monthlyContributions: { [monthName: string]: number } = {};
+  const monthlyContributions: { [month: string]: number } = {};
 
+  // 各日のコントリビューションを月ごとに集計
   weeks.forEach((week) => {
     week.contributionDays.forEach((day) => {
       const contributionDate = new Date(day.date);
-      const monthName = contributionDate.toLocaleString("en", {
-        month: "short",
-      });
-      const year = contributionDate.getFullYear();
-      monthlyContributions[`${monthName} ${year}`] =
-        (monthlyContributions[`${monthName} ${year}`] || 0) +
-        day.contributionCount;
+      const month = contributionDate.getMonth(); // 月を 0-11 で取得
+      monthlyContributions[month] =
+        (monthlyContributions[month] || 0) + day.contributionCount;
     });
   });
 
-  const date = new Date();
-  const currentMonthName = date.toLocaleString("en", { month: "short" });
-  const currentYear = date.getFullYear();
-  const currentKey = `${currentMonthName} ${currentYear}`;
+  // 現在の月を取得
+  const currentMonth = new Date().getMonth();
 
-  const updatedMonths: MonthContribution[] = months.slice(1).map((month) => ({
-    name: month.name,
-    year: month.year,
-    contributions: monthlyContributions[`${month.name} ${month.year}`] || 0,
-  }));
-
-  updatedMonths.push({
-    name: currentMonthName,
-    year: currentYear,
-    contributions: monthlyContributions[currentKey] || 0,
+  // 12ヶ月のデータをリストとして作成（過去12ヶ月分）
+  const contributionsList = Array.from({ length: 12 }, (_, i) => {
+    const monthIndex = (currentMonth + i + 1) % 12;
+    return monthlyContributions[monthIndex] || 0;
   });
 
-  return {
-    totalContributions,
-    months: updatedMonths,
-  };
+  return contributionsList;
 };
 
 // ユーザーのアクティビティログを取得
 export const getActivityLogService = async (
   username: string | null,
   token: string | null,
-  hoursBack: number
+  hoursBack: string
 ) => {
   // 現在のUTC時間から指定した時間数を引き算してISO形式を取得
   const sinceDate = new Date();
-  sinceDate.setUTCHours(sinceDate.getUTCHours() - hoursBack); // UTCでの時間を計算
+  sinceDate.setUTCHours(sinceDate.getUTCHours() - Number(hoursBack)); // UTCでの時間を計算
   const sinceISOString = sinceDate.toISOString(); // ISO形式に変換
 
   // GraphQLクエリを実行
@@ -244,22 +230,24 @@ export const getActivityLogService = async (
     });
 
   // プルリクエストの情報を追加
-  typedResponse.user.contributionsCollection.pullRequestContributionsByRepository.forEach((repo) => {
-    const repoName = repo.repository.name;
-    repo.contributions.nodes.forEach((contribution: any) => {
-      const pullRequestDate = contribution.pullRequest.createdAt;
-      if (new Date(pullRequestDate) >= sinceDate) {
-        activities.push({
-          type: "pullRequest",
-          repository: repoName,
-          title: contribution.pullRequest.title,
-          url: contribution.pullRequest.url,
-          mergedAt: contribution.pullRequest.mergedAt,
-          date: pullRequestDate,
-        });
-      }
-    });
-  });
+  typedResponse.user.contributionsCollection.pullRequestContributionsByRepository.forEach(
+    (repo) => {
+      const repoName = repo.repository.name;
+      repo.contributions.nodes.forEach((contribution: any) => {
+        const pullRequestDate = contribution.pullRequest.createdAt;
+        if (new Date(pullRequestDate) >= sinceDate) {
+          activities.push({
+            type: "pullRequest",
+            repository: repoName,
+            title: contribution.pullRequest.title,
+            url: contribution.pullRequest.url,
+            mergedAt: contribution.pullRequest.mergedAt,
+            date: pullRequestDate,
+          });
+        }
+      });
+    }
+  );
 
   // イシューの情報を追加
   typedResponse.user.issues.edges.forEach((edge: { node: any }) => {
@@ -278,22 +266,24 @@ export const getActivityLogService = async (
   });
 
   // レビューの情報を追加
-  typedResponse.user.contributionsCollection.pullRequestContributionsByRepository.forEach((repo) => {
-    repo.contributions.nodes.forEach((contribution: any) => {
-      contribution.pullRequest.reviews.nodes.forEach((review: any) => {
-        if (new Date(review.submittedAt) >= sinceDate) {
-          activities.push({
-            type: "review",
-            pullRequestTitle: contribution.pullRequest.title,
-            repository: repo.repository.name,
-            reviewAuthor: review.author.login,
-            reviewBody: review.body,
-            date: review.submittedAt,
-          });
-        }
+  typedResponse.user.contributionsCollection.pullRequestContributionsByRepository.forEach(
+    (repo) => {
+      repo.contributions.nodes.forEach((contribution: any) => {
+        contribution.pullRequest.reviews.nodes.forEach((review: any) => {
+          if (new Date(review.submittedAt) >= sinceDate) {
+            activities.push({
+              type: "review",
+              pullRequestTitle: contribution.pullRequest.title,
+              repository: repo.repository.name,
+              reviewAuthor: review.author.login,
+              reviewBody: review.body,
+              date: review.submittedAt,
+            });
+          }
+        });
       });
-    });
-  });
+    }
+  );
 
   // アクティビティを日付でソート（新しい順）
   const sortedActivities = activities.sort(

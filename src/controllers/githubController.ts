@@ -31,10 +31,10 @@ export const getGithubInfo = async (req: Request, res: Response) => {
     // 各サービスを呼び出す
     const repositories = await getRepostiroryService(username, token);
     const contributions = await getContributionService(username, token);
-    const logs = await getActivityLogService(username, token, 10);
+    // const logs = await getActivityLogService(username, token, 10);
     const languages = await getUseLanguagesService(username, token);
 
-    const result = { repositories, contributions, logs, languages };
+    const result = { repositories, contributions, languages };
 
     res.json(result);
   } catch (error) {
@@ -60,12 +60,16 @@ export const getRepository = async (req: Request, res: Response) => {
 
 // ユーザーのコントリビューション数を取得
 export const getContribution = async (req: Request, res: Response) => {
-  const { uuid } = req.body;
+  const { uuid } = req.query;
+  if (typeof uuid !== "string") {
+    res.status(400).json({ error: "Invalid parameters" });
+    return;
+  }
   try {
     const { username, token } = await getUserGithubInfo(uuid);
 
     const contributions = await getContributionService(username, token);
-
+    console.log(contributions);
     res.json(contributions);
   } catch (error) {
     console.error("Error in getContributions:", error);
@@ -74,19 +78,19 @@ export const getContribution = async (req: Request, res: Response) => {
 };
 
 // ユーザーの直近のアクティビティログを取得
-export const getActivityLog = async (req: Request, res: Response) => {
-  const { uuid } = req.body;
-  try {
-    const { username, token } = await getUserGithubInfo(uuid);
+// export const getActivityLog = async (req: Request, res: Response) => {
+//   const { uuid } = req.body;
+//   try {
+//     const { username, token } = await getUserGithubInfo(uuid);
 
-    const logs = await getActivityLogService(username, token, 10);
+//     const logs = await getActivityLogService(username, token, 10);
 
-    res.json(logs);
-  } catch (error) {
-    console.error("Error in getActivityLog:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+//     res.json(logs);
+//   } catch (error) {
+//     console.error("Error in getActivityLog:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
 
 // ユーザーの使用言語量(割合)を取得
 export const getUseLanguage = async (req: Request, res: Response) => {

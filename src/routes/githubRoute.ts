@@ -4,8 +4,7 @@ import {
   getGithubInfo,
   getRepository,
   getContribution,
-  getActivityLog,
-  getUseLanguage
+  getUseLanguage,
 } from "../controllers/githubController";
 
 const router = Router();
@@ -13,8 +12,7 @@ const router = Router();
 router.post("/callback", githubCallback);
 // TODO: routeは仮置き
 router.post("/repo", getRepository);
-router.post("/cont", getContribution);
-router.post("/log", getActivityLog);
+router.get("/contributionList", getContribution);
 router.post("/lang", getUseLanguage);
 
 router.post("/info", getGithubInfo);
