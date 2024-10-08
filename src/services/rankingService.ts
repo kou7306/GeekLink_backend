@@ -91,19 +91,25 @@ export const getAllRankingService = async () => {
     const formattedmonthlyQiita = convertIdToString(await getTopRankingNames(monthlyQiita));
 
     const result = {
-      dailyActivity: formatteddailyActivity,
-      dailyContribution: formatteddailyContribution,
-      dailyStar: formatteddailyStar,
-      dailyQiita: formatteddailyQiita,
-      weeklyActivity: formattedweeklyActivity,
-      weeklyContribution: formattedweeklyContribution,
-      weeklyStar: formattedweeklyStar,
-      weeklyQiita: formattedweeklyQiita,
-      monthlyActivity: formattedmonthlyActivity,
-      monthlyContribution: formattedmonthlyContribution,
-      monthlyStar: formattedmonthlyStar,
-      monthlyQiita: formattedmonthlyQiita
-    };
+      daily: {
+        activity: formatteddailyActivity,
+        contribution: formatteddailyContribution,
+        star: formatteddailyStar,
+        qiita: formatteddailyQiita,
+      },
+      weekly: {
+        activity: formattedweeklyActivity,
+        contribution: formattedweeklyContribution,
+        star: formattedweeklyStar,
+        qiita: formattedweeklyQiita,
+      },
+      monthly: {
+        activity: formattedmonthlyActivity,
+        contribution: formattedmonthlyContribution,
+        star: formattedmonthlyStar,
+        qiita: formattedmonthlyQiita,
+      },
+    }
 
     return result;
   } catch(error: any) {
