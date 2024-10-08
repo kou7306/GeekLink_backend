@@ -13,6 +13,7 @@ import eventRoutes from "./routes/eventRoutes";
 import githubRoutes from "./routes/githubRoute";
 import qiitaRoutes from "./routes/qiitaRoutes";
 import activityRoutes from "./routes/activityRoutes";
+import rankingRoutes from "./routes/rankingRoutes";
 import http from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import {
@@ -60,6 +61,7 @@ app.use("/events", eventRoutes);
 app.use("/github", githubRoutes);
 app.use("/qiita", qiitaRoutes);
 app.use("/activity", activityRoutes);
+app.use("/ranking", rankingRoutes);
 io.of("/ws/chat").on("connection", chatSocketConnection);
 io.of("/ws/group-chat").on("connection", groupChatSocketConnection);
 
