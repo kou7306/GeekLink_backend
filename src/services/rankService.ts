@@ -5,7 +5,7 @@ import { contributionResponse } from "../types/githubInterface";
 import prisma from "../config/prisma";
 import axios from "axios";
 
-export const getUserRankService = async (uuid: string) => {
+export const updateUserRankService = async (uuid: string) => {
   try {
     // レベルの計算に必要な情報の取得
     // 総コントリビューション数の取得
@@ -73,13 +73,47 @@ export const getUserRankService = async (uuid: string) => {
     // ランクの計算ロジック
     const rank = calculateUserRank(level);
 
-    const result = {
-      rank: rank,
-      level: level,
-      nextLevelPoints: nextLevelPoints
+    const updateRank = await prisma.users.update({
+      where: { user_id: uuid },
+      data: {
+        rank: rank,
+        level: level.toString(),
+        next_level_points: nextLevelPoints.toString()
+      }
+    })
+
+    if (updateRank) {
+      return {
+        rank: rank,
+        level: level,
+        nextLevelPoints: nextLevelPoints
+      };
+    };
+  } catch(error: any) {
+    throw new Error(error.message);
+  }
+}
+
+export const getUserRankService = async (uuid: string) => {
+  try {
+    const userRank = await prisma.users.findUnique({
+      where: {user_id: uuid},
+      select: {
+        rank: true,
+        level: true,
+        next_level_points: true,
+      },
+    });
+
+    if (!userRank) {
+      throw new Error("User rank not found");
     }
 
-    return result;
+    return {
+      rank: userRank.rank,
+      level: userRank.level,
+      nextLevelPoints: userRank.next_level_points,
+    }
   } catch(error: any) {
     throw new Error(error.message);
   }
