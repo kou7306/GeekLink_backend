@@ -97,7 +97,7 @@ export const getAllRankingService = async () => {
 export const getTopRankingService = async () => {
   try {
     const topRanking = await prisma.dailyGithubContributionRanking.findMany({
-      where: {rank: {lte: 5}},
+      where: {rank: {lte: 3}},
       orderBy: {rank: 'asc'},
     });
 
