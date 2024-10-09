@@ -65,10 +65,20 @@ export const getQiitaUserActivityService = async (
     });
 
     if (!user) {
-      throw new Error("User not found");
+      return {
+        monthlyPostCounts: Array(12).fill(0),
+        postDetails: [],
+      };
     }
 
     const { qiita_access_token, qiita } = user;
+
+    if (!qiita_access_token || !qiita) {
+      return {
+        monthlyPostCounts: Array(12).fill(0),
+        postDetails: [],
+      };
+    }
 
     // ユーザーの投稿情報を取得
     const response = await axios.get(
@@ -105,28 +115,41 @@ export const getQiitaUserActivityService = async (
     const monthlyPostCounts = Array(12).fill(0);
     const postDetails: {
       title: any;
+      likes_count: any;
+      page_views_count: any;
+      tags: any[];
       url: any;
       date: Date;
     }[] = [];
 
-    posts.forEach((post: { created_at: Date; title: any; url: any }) => {
-      const postDate = new Date(post.created_at);
-      if (postDate >= cutoffDate) {
-        // カットオフ日以降の投稿のみを考慮
-        const month = postDate.getUTCMonth(); // 0-11の範囲
-        monthlyPostCounts[month] += 1;
+    posts.forEach(
+      (post: {
+        tags: any[];
+        page_views_count: any;
+        likes_count: any;
+        created_at: Date;
+        title: any;
+        url: any;
+      }) => {
+        const postDate = new Date(post.created_at);
+        if (postDate >= cutoffDate) {
+          // カットオフ日以降の投稿のみを考慮
+          const month = postDate.getUTCMonth(); // 0-11の範囲
+          monthlyPostCounts[month] += 1;
 
-        // 投稿の詳細を追加
-        postDetails.push({
-          title: post.title,
-          url: post.url,
-          date: post.created_at,
-          // 他の必要な情報を追加
-        });
+          // 投稿の詳細を追加
+          postDetails.push({
+            title: post.title,
+            likes_count: post.likes_count,
+            page_views_count: post.page_views_count,
+            tags: post.tags,
+            url: post.url,
+            date: post.created_at,
+            // 他の必要な情報を追加
+          });
+        }
       }
-    });
-
-    console.log("postDetails", postDetails);
+    );
 
     // 結果を返す
     return {
