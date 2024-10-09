@@ -116,7 +116,7 @@ export const getRepostiroryService = async (
   const repositories = (
     response as repositoryResponse
   ).user.repositories.edges.map((edge) => {
-    const { name, stargazerCount, defaultBranchRef, languages, updatedAt } =
+    const { name, url, stargazerCount, defaultBranchRef, languages, updatedAt } =
       edge.node;
 
     const languageData = languages.edges.map((lang) => ({
@@ -137,6 +137,7 @@ export const getRepostiroryService = async (
 
     return {
       name,
+      url,
       stargazerCount,
       commitCount,
       languages: languagePercentage,

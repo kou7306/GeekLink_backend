@@ -13,6 +13,7 @@ interface commitNode {
 
 interface repositoryNode {
   name: string;
+  url: string;
   stargazerCount: number;
   defaultBranchRef: commitNode;
   languages: {

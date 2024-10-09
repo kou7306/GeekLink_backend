@@ -6,6 +6,7 @@ export const getRepositoryQuery = `
         edges {
           node {
             name
+            url
             stargazerCount
             defaultBranchRef {
               target {
