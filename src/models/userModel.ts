@@ -28,6 +28,9 @@ export type User = {
   image_url?: string;
   qiita_access_token?: string;
   github_access_token?: string;
+  rank?: string;
+  level?: string;
+  next_level_points?: string;
 };
 
 export type TopUserResponse = {

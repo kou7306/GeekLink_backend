@@ -165,3 +165,16 @@ export const getUseLanguageQuery = `
     }
   }
 `;
+
+// ユーザーの総コントリビューション数を取得(ランク計算に使用)
+export const getTotalContributionsQuery = `
+  query getTotalContributionsQuery($username: String!) {
+    user(login: $username) {
+      contributionsCollection {
+        contributionCalendar {
+          totalContributions
+        }
+      }
+    }
+  }
+`;
