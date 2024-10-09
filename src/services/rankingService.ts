@@ -27,6 +27,10 @@ const getTopRankingNames = async (topRanking: any[]) => {
 // 全てのランキングを取得(上位5件)
 export const getAllRankingService = async () => {
   try {
+    const dailyActivity = await prisma.dailyGeekLinkActivity.findMany({
+      where: {rank: {lte: 5}},
+      orderBy: {rank: 'asc'}
+    });
     const dailyContribution = await prisma.dailyGithubContributionRanking.findMany({
       where: {rank: {lte: 5}},
       orderBy: {rank: 'asc'}
@@ -39,6 +43,10 @@ export const getAllRankingService = async () => {
       where: {rank: {lte: 5}},
       orderBy: {rank: 'asc'}
     });
+    const weeklyActivity = await prisma.weeklyGeekLinkActivity.findMany({
+      where: {rank: {lte: 5}},
+      orderBy: {rank: 'asc'}
+    });
     const weeklyContribution = await prisma.weeklyGithubContributionRanking.findMany({
       where: {rank: {lte: 5}},
       orderBy: {rank: 'asc'}
@@ -48,6 +56,10 @@ export const getAllRankingService = async () => {
       orderBy: {rank: 'asc'}
     });
     const weeklyQiita = await prisma.weeklyQiitaRanking.findMany({
+      where: {rank: {lte: 5}},
+      orderBy: {rank: 'asc'}
+    });
+    const monthlyActivity = await prisma.monthlyGeekLinkActivity.findMany({
       where: {rank: {lte: 5}},
       orderBy: {rank: 'asc'}
     });
@@ -65,27 +77,39 @@ export const getAllRankingService = async () => {
     });
 
     // IDがBigInt型の為, string型に変換
+    const formatteddailyActivity = convertIdToString(await getTopRankingNames(dailyActivity));
     const formatteddailyContribution = convertIdToString(await getTopRankingNames(dailyContribution));
     const formatteddailyStar = convertIdToString(await getTopRankingNames(dailyStar));
     const formatteddailyQiita = convertIdToString(await getTopRankingNames(dailyQiita));
+    const formattedweeklyActivity = convertIdToString(await getTopRankingNames(weeklyActivity));
     const formattedweeklyContribution = convertIdToString(await getTopRankingNames(weeklyContribution));
     const formattedweeklyStar = convertIdToString(await getTopRankingNames(weeklyStar));
     const formattedweeklyQiita = convertIdToString(await getTopRankingNames(weeklyQiita));
+    const formattedmonthlyActivity = convertIdToString(await getTopRankingNames(monthlyActivity));
     const formattedmonthlyContribution = convertIdToString(await getTopRankingNames(monthlyContribution));
     const formattedmonthlyStar = convertIdToString(await getTopRankingNames(monthlyStar));
     const formattedmonthlyQiita = convertIdToString(await getTopRankingNames(monthlyQiita));
 
     const result = {
-      dailyContribution: formatteddailyContribution,
-      dailyStar: formatteddailyStar,
-      dailyQiita: formatteddailyQiita,
-      weeklyContribution: formattedweeklyContribution,
-      weeklyStar: formattedweeklyStar,
-      weeklyQiita: formattedweeklyQiita,
-      monthlyContribution: formattedmonthlyContribution,
-      monthlyStar: formattedmonthlyStar,
-      monthlyQiita: formattedmonthlyQiita
-    };
+      daily: {
+        activity: formatteddailyActivity,
+        contribution: formatteddailyContribution,
+        star: formatteddailyStar,
+        qiita: formatteddailyQiita,
+      },
+      weekly: {
+        activity: formattedweeklyActivity,
+        contribution: formattedweeklyContribution,
+        star: formattedweeklyStar,
+        qiita: formattedweeklyQiita,
+      },
+      monthly: {
+        activity: formattedmonthlyActivity,
+        contribution: formattedmonthlyContribution,
+        star: formattedmonthlyStar,
+        qiita: formattedmonthlyQiita,
+      },
+    }
 
     return result;
   } catch(error: any) {
@@ -112,6 +136,12 @@ export const getTopRankingService = async () => {
 // デイリーランキングを取得
 export const getDailyRankingService = async () => {
   try {
+    const activity = await prisma.dailyGeekLinkActivity.findMany({
+      orderBy: {
+        rank: 'asc'
+      }
+    });
+
     const contribution = await prisma.dailyGithubContributionRanking.findMany({
       orderBy: {
         rank: 'asc'
@@ -131,11 +161,13 @@ export const getDailyRankingService = async () => {
     });
 
     // IDがBigInt型の為, string型に変換
+    const formattedActivity = convertIdToString(await getTopRankingNames(activity));
     const formattedContribution = convertIdToString(await getTopRankingNames(contribution));
     const formattedStar = convertIdToString(await getTopRankingNames(star));
     const formattedQiita = convertIdToString(await getTopRankingNames(qiita));
 
     const result = {
+      activity: formattedActivity,
       contribution: formattedContribution,
       star: formattedStar,
       qiita: formattedQiita
@@ -150,6 +182,12 @@ export const getDailyRankingService = async () => {
 // ウィークリーランキングを取得
 export const getWeeklyRankingService = async () => {
   try {
+    const activity = await prisma.weeklyGeekLinkActivity.findMany({
+      orderBy: {
+        rank: 'asc'
+      }
+    });
+
     const contribution = await prisma.weeklyGithubContributionRanking.findMany({
       orderBy: {
         rank: 'asc'
@@ -169,11 +207,13 @@ export const getWeeklyRankingService = async () => {
     });
 
     // IDがBigInt型の為, string型に変換
+    const formattedActivity = convertIdToString(await getTopRankingNames(activity));
     const formattedContribution = convertIdToString(await getTopRankingNames(contribution));
     const formattedStar = convertIdToString(await getTopRankingNames(star));
     const formattedQiita = convertIdToString(await getTopRankingNames(qiita));
 
     const result = {
+      activity: formattedActivity,
       contribution: formattedContribution,
       star: formattedStar,
       qiita: formattedQiita
@@ -188,6 +228,12 @@ export const getWeeklyRankingService = async () => {
 // マンスリーランキングを取得
 export const getMonthlyRankingService = async () => {
   try {
+    const activity = await prisma.monthlyGeekLinkActivity.findMany({
+      orderBy: {
+        rank: 'asc'
+      }
+    });
+
     const contribution = await prisma.monthlyGithubContributionRanking.findMany({
       orderBy: {
         rank: 'asc'
@@ -207,11 +253,13 @@ export const getMonthlyRankingService = async () => {
     });
 
     // IDがBigInt型の為, string型に変換
+    const formattedActivity = convertIdToString(await getTopRankingNames(activity));
     const formattedContribution = convertIdToString(await getTopRankingNames(contribution));
     const formattedStar = convertIdToString(await getTopRankingNames(star));
     const formattedQiita = convertIdToString(await getTopRankingNames(qiita));
 
     const result = {
+      activity: formattedActivity,
       contribution: formattedContribution,
       star: formattedStar,
       qiita: formattedQiita
