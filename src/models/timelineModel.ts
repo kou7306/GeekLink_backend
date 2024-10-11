@@ -11,6 +11,7 @@ export interface Reaction {
 export interface Post {
   id: string; // 投稿のID
   userId: string; // 投稿を作成したユーザーのID
+  user_name: string; // 投稿を作成したユーザーの名前
   title: string; // 投稿のタイトル
   time: string; // やった時間
   comment: string; // 投稿の内容
@@ -25,4 +26,4 @@ export type Timeline = {
   time: string;
   comment: string;
   created_at: Date;
-}
+};

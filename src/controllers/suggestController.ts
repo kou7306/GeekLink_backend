@@ -10,7 +10,6 @@ import {
 import { users } from "@prisma/client";
 
 export const getAllSuggestUsers = async (req: Request, res: Response) => {
-  console.log("getAllSuggestUsers");
   const uuid = req.query.uuid as string;
   try {
     const userData = await getUserDataService(uuid);

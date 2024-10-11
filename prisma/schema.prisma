@@ -38,7 +38,7 @@ model users {
   desired_occupation  String?
   faculty             String?
   experience          String[]
-  image_url           String?
+  image_url           String?   @default("")
   qiita_access_token  String?
   github_access_token String?
   github_username     String?
@@ -103,6 +103,7 @@ model Event {
   updated_at       DateTime? @db.Timestamptz(6)
   deadline         DateTime  @db.Timestamptz(6)
   techs            String[]
+  is_closed        Boolean   @default(false)
   users            users     @relation(fields: [owner_id], references: [user_id], onDelete: Cascade)
 
   @@schema("public")
@@ -533,6 +534,7 @@ model Timeline {
   title            String?
   time             String?
   comment          String?
+  user_name        String?
   TimelineReaction TimelineReaction[]
 
   @@index([user_id], map: "idx_timeline_user_id")
