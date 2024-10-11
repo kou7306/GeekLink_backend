@@ -3,6 +3,6 @@ export type Message = {
   sender_id: string;
   receiver_id: string;
   content: string;
-  created_at: string;
+  created_at: Date;
   room_id: string;
 };
