@@ -12,8 +12,8 @@ import {
 export const githubCallback = async (req: Request, res: Response) => {
   const { uuid, code } = req.body;
   try {
-    const client_id = process.env.GITHUB_CLIENT_ID;
-    const client_secret = process.env.GITHUB_CLIENT_SECRET;
+    const client_id = process.env.OAUTH_GITHUB_CLIENT_ID;
+    const client_secret = process.env.OAUTH_GITHUB_CLIENT_SECRET;
     if (client_id == undefined || client_secret == undefined) return;
     await githubCallBackService(uuid, code, client_id, client_secret);
     res.status(200).json({ message: "Likes created successfully" });
