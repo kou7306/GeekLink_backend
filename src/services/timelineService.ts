@@ -21,6 +21,7 @@ export const getPostService = async (
   const formattedPosts: Post[] = posts.map((post) => ({
     id: post.post_id,
     userId: post.user_id || "",
+    user_name: post.user_name || "",
     title: post.title || "",
     time: post.time || "",
     comment: post.comment || "",
@@ -43,9 +44,19 @@ export const createPostService = async (
   time: string,
   comment: string
 ): Promise<Post> => {
+  const user = await prisma.users.findUnique({
+    where: {
+      user_id: userId,
+    },
+    select: {
+      name: true,
+    },
+  });
+
   const newPost = await prisma.timeline.create({
     data: {
       user_id: userId,
+      user_name: user?.name,
       title: title,
       time: time,
       comment: comment,
@@ -55,6 +66,7 @@ export const createPostService = async (
   return {
     id: newPost.post_id,
     userId: newPost.user_id || "",
+    user_name: newPost.user_name || "",
     title: newPost.title || "",
     time: newPost.time || "",
     comment: newPost.comment || "",
@@ -105,6 +117,7 @@ export const addReactionService = async (
   return {
     id: updatedPost.post_id,
     userId: updatedPost.user_id || "",
+    user_name: updatedPost.user_name || "",
     title: updatedPost.title || "",
     time: updatedPost.time || "",
     comment: updatedPost.comment || "",
