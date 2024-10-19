@@ -109,6 +109,14 @@ export const getUserRankService = async (uuid: string) => {
       throw new Error("User rank not found");
     }
 
+    if (userRank.rank == null || userRank.level == null || userRank.next_level_points == null) {
+      return {
+        rank: "BronzeⅢ",
+        level: "0",
+        nextLevelPoints: "100",
+      }
+    }
+
     return {
       rank: userRank.rank,
       level: userRank.level,

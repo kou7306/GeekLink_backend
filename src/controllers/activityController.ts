@@ -18,6 +18,10 @@ export const getGithubActivity = async (req: Request, res: Response) => {
 
   try {
     const { username, token } = await getUserGithubInfo(uuid);
+    if (username == null || token == null) {
+      res.status(400).json({ error: "Your GitHub account is not connected" });
+      return;
+    }
 
     // 各サービスを呼び出す
     const logs = await getActivityLogService(username, token, time);
