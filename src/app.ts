@@ -16,12 +16,11 @@ import activityRoutes from "./routes/activityRoutes";
 import rankRoutes from "./routes/rankRoutes";
 import rankingRoutes from "./routes/rankingRoutes";
 import http from "http";
-import { Server as SocketIOServer, Socket } from "socket.io";
+import { Server as SocketIOServer } from "socket.io";
 import {
   chatSocketConnection,
   groupChatSocketConnection,
 } from "./controllers/wsController";
-import { time } from "console";
 
 dotenv.config();
 

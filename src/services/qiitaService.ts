@@ -41,7 +41,7 @@ export const qiitaCallBackService = async (
       },
     });
 
-    console.log("成功");
+    console.log("Qiitaとの連携に成功");
   } catch (error) {
     console.error(
       "アクセストークンの取得またはユーザー情報の取得に失敗しました:",

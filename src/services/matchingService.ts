@@ -12,8 +12,6 @@ export const matchingCheck = async (
     user_id
   );
 
-  console.log("filteredLikes", filteredLikes);
-  console.log("filteredOtherLikes", filteredOtherLikes);
 
   if (filteredLikes.length >= 1 && filteredOtherLikes.length >= 1) {
     await createMatching(user_id, other_user_id);
@@ -87,24 +85,3 @@ const deleteMatching = async (
     console.error("Error deleting match:", error);
   }
 };
-
-// const deleteLike = async (
-//   row_id: number,
-//   other_row_id: number
-// ): Promise<void> => {
-//   try {
-//     await prisma.like.delete({
-//       where: { id: row_id },
-//     });
-//   } catch (error) {
-//     console.error("Error deleting like:", error);
-//   }
-
-//   try {
-//     await prisma.like.delete({
-//       where: { id: other_row_id },
-//     });
-//   } catch (error: any) {
-//     console.error("Error deleting like:", error);
-//   }
-// };

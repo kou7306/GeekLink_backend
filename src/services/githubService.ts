@@ -10,7 +10,6 @@ import {
 import {
   repositoryResponse,
   contributionResponse,
-  MonthContribution,
   activityResponse,
 } from "../types/githubInterface";
 

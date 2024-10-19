@@ -1,8 +1,5 @@
 import prisma from "../config/prisma";
 import { users, Message, Match } from "@prisma/client";
-// import { User } from "../models/userModel";
-// import { Match } from "../models/matchModel";
-// import { Message } from "../models/messageModel";
 
 
 export const getUserDataService = async (

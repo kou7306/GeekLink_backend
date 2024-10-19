@@ -69,7 +69,7 @@ export const getContribution = async (req: Request, res: Response) => {
     const { username, token } = await getUserGithubInfo(uuid);
 
     const contributions = await getContributionService(username, token);
-    console.log(contributions);
+
     res.json(contributions);
   } catch (error) {
     console.error("Error in getContributions:", error);
