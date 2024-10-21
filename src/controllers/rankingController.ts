@@ -20,7 +20,7 @@ export const getAllRanking = async (req: Request, res: Response) => {
   }
 }
 
-// トップ画面用にデイリーコントリビューション数ランキング上位3人を取得
+// トップ画面用にデイリーコントリビューション数ランキング上位5人を取得
 export const getTopRanking = async (req:Request, res: Response) => {
   try {
     const topRanking = await getTopRankingService();

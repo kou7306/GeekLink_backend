@@ -56,12 +56,6 @@ export interface contributionResponse {
   };
 }
 
-export interface MonthContribution {
-  name: string;
-  year: number;
-  contributions: number;
-}
-
 export interface activityResponse {
   user: {
     issues: any;

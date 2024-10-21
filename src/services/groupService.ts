@@ -1,7 +1,5 @@
-import exp from "constants";
 import prisma from "../config/prisma";
 import { Message, UserGroups, users } from "@prisma/client";
-import { group } from "console";
 
 export const getGroupMessagesService = async (
   groupId: string

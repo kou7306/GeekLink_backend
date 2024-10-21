@@ -1,4 +1,4 @@
-import { Server, Socket } from "socket.io";
+import { Socket } from "socket.io";
 import { io } from "../app";
 import { saveMessage } from "../services/messageService";
 import { Message } from "../models/messageModel";
