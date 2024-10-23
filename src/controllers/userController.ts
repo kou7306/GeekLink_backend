@@ -2,15 +2,15 @@ import { Request, Response } from "express";
 import {
   checkUserExistsService,
   getFilterUsers,
-  getMatchingUsersService,
+  getMutualFollowUsersService,
   getMessagesAndRoomService,
 } from "../services/userService";
 import { getLatestMessages } from "../services/messageService";
 
-export const getMatchingUsers = async (req: Request, res: Response) => {
+export const getMutualFollowUsers = async (req: Request, res: Response) => {
   const { uuid } = req.body;
   try {
-    const users = await getMatchingUsersService(uuid);
+    const users = await getMutualFollowUsersService(uuid);
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
