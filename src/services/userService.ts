@@ -85,7 +85,9 @@ export const checkUserExistsService = async (user_id: string): Promise<boolean> 
     },
   });
 
-  return !!user;
+  // nameの初期値をEMPTYに設定しているため,
+  // 初期登録ができていても名前の変更がまだ(プロフィールの設定がこれから)の場合はfalse
+  return !!user && user.name !== "";
 };
 
 // 出身地を引数に取り、その出身地のユーザーを取得する関数
