@@ -31,15 +31,12 @@ export const getProfileService = async (
   }
 };
 
-export const LikeStatusCheck = async (
-  user_id: string,
-  other_user_id: string
-) => {
+export const followStatusCheck = async (user_id: string, other_user_id: string) => {
   try {
-    const result = await prisma.like.findFirst({
+    const result = await prisma.follows.findFirst({
       where: {
-        user_id: user_id,
-        liked_user_id: other_user_id,
+        follower_id: user_id,
+        followee_id: other_user_id,
       },
     });
 
