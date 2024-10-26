@@ -14,15 +14,15 @@ datasource db {
 model users {
   user_id             String    @id @default(uuid())
   created_at          DateTime  @default(now())
-  name                String
-  sex                 String
-  age                 String
-  place               String
-  top_tech            String
+  name                String    @default("")
+  sex                 String    @default("")
+  age                 String    @default("")
+  place               String    @default("")
+  top_tech            String    @default("")
   top_teches          String[]
   teches              String[]
   hobby               String?
-  occupation          String
+  occupation          String    @default("")
   affiliation         String?
   qualification       String[]
   editor              String?
