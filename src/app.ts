@@ -15,6 +15,7 @@ import qiitaRoutes from "./routes/qiitaRoutes";
 import activityRoutes from "./routes/activityRoutes";
 import rankRoutes from "./routes/rankRoutes";
 import rankingRoutes from "./routes/rankingRoutes";
+import lifeRoutes from "./routes/lifeRoutes";
 import http from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import {
@@ -64,6 +65,7 @@ app.use("/qiita", qiitaRoutes);
 app.use("/activity", activityRoutes);
 app.use("/rank", rankRoutes);
 app.use("/ranking", rankingRoutes);
+app.use("/life", lifeRoutes);
 io.of("/ws/chat").on("connection", chatSocketConnection);
 io.of("/ws/group-chat").on("connection", groupChatSocketConnection);
 

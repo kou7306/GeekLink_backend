@@ -19,10 +19,8 @@ export const getGithubActivity = async (req: Request, res: Response) => {
 
   try {
     const { username, token } = await getUserGithubInfo(uuid);
-    console.log("username: ", username);
     // 各サービスを呼び出す
     const logs = await getActivityLogService(username, token, time);
-    console.log("logs: ", logs);
     const result = { logs };
 
     res.json(result);
