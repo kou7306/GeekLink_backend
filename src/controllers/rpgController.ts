@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import {
   getUserCoinService,
-  updateCoinService
+  updateUserCoinService
 } from "../services/rpgService";
 
 export const getUserCoin = async (req: Request, res: Response) => {
@@ -15,10 +15,11 @@ export const getUserCoin = async (req: Request, res: Response) => {
   };
 };
  
-export const updateCoin = async (req: Request, res: Response) => {
-  const { uuid, coin } = req.body;
+export const updateUserCoin = async (req: Request, res: Response) => {
   try {
-    const result = await updateCoinService(uuid, coin);
+    const uuid = req.params.uuid;
+    const { coin } = req.body
+    const result = await updateUserCoinService(uuid, coin);
 
     res.json(result)
   } catch(error) {

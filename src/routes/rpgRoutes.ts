@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { 
   getUserCoin,
-  updateCoin,
+  updateUserCoin,
 } from "../controllers/rpgController";
 
 const router = Router();
 
 router.get("/coin/:uuid", getUserCoin);
-router.post("/coin", updateCoin);
+router.put("/coin/:uuid", updateUserCoin);
 
 export default router;
