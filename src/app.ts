@@ -16,6 +16,7 @@ import activityRoutes from "./routes/activityRoutes";
 import rankRoutes from "./routes/rankRoutes";
 import rankingRoutes from "./routes/rankingRoutes";
 import followRoutes from "./routes/followRoutes";
+import rpgRoutes from "./routes/rpgRoutes";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
 import {
@@ -65,6 +66,7 @@ app.use("/activity", activityRoutes);
 app.use("/rank", rankRoutes);
 app.use("/ranking", rankingRoutes);
 app.use("/follow", followRoutes);
+app.use("/rpg", rpgRoutes);
 io.of("/ws/chat").on("connection", chatSocketConnection);
 io.of("/ws/group-chat").on("connection", groupChatSocketConnection);
 

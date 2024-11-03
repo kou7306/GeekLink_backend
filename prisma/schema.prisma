@@ -45,6 +45,8 @@ model users {
   rank                String?
   level               String?
   next_level_points   String?
+  life                String?   @default("5")
+  coin                String?   @default("0")
   Event               Event[]
 
   @@schema("public")
