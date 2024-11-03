@@ -1,5 +1,18 @@
 import prisma from "../config/prisma";
 
+export const getUserCoinService = async (uuid: string) => {
+  try {
+    const coin = await prisma.users.findUnique({
+      where: { user_id: uuid },
+      select: { coin: true },
+    });
+
+    return coin
+  } catch(error: any) {
+    throw new Error(error.message);
+  };
+}
+
 export const updateCoinService = async (uuid: string, coinStr: string) => {
   try {
     const getCoin = parseInt(coinStr);
