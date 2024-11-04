@@ -15,11 +15,11 @@ const coinCalculation = async (uuid: string, coinStr: string) => {
       const updateCoin = currentCoin + getCoin;
 
       return updateCoin;
-    }
+    };
   } catch(error: any) {
     throw new Error(error.message);
-  }
-}
+  };
+};
 
 export const getUserCoinService = async (uuid: string) => {
   try {
@@ -32,7 +32,7 @@ export const getUserCoinService = async (uuid: string) => {
   } catch(error: any) {
     throw new Error(error.message);
   };
-}
+};
 
 export const updateUserCoinService = async (uuid: string, coinStr: string) => {
   try {
@@ -42,13 +42,58 @@ export const updateUserCoinService = async (uuid: string, coinStr: string) => {
       const updateCoinStr = updateCoin < 0 ? "0" : updateCoin.toString();
       
       await prisma.users.update({
-      where: { user_id: uuid },
-      data: { coin: updateCoinStr },
+        where: { user_id: uuid },
+        data: { coin: updateCoinStr },
       });
 
       return { coin: updateCoin };
     }
     } catch (error: any) {
     throw new Error(error.message);
-  }
-}
+  };
+};
+
+export const getUserItemsService = async (uuid: string) => {
+  try {
+    const items = await prisma.users.findUnique({
+      where: {user_id: uuid},
+      select: {items: true},
+    });
+
+    return items;
+  } catch (error: any) {
+    throw new Error(error.message);
+  };
+};
+
+export const getItemService = async (uuid: string, item: string, coinStr: string) => {
+  try {
+    const updateCoin = await coinCalculation(uuid, coinStr);
+    
+    if (updateCoin !== undefined && updateCoin >= 0) {
+      const updateCoinStr = updateCoin.toString();
+      
+      await prisma.users.update({
+        where: { user_id: uuid },
+        data: {
+          coin: updateCoinStr,
+          items: {
+            push: item,
+          }
+        },
+      });
+
+      return { 
+        coin: updateCoin,
+        item: item,
+        result: "アイテムを購入しました"
+      };
+    } else if (updateCoin !== undefined && updateCoin < 0) {
+      return {
+        result: "コインが不足しているためアイテムを購入できませんでした"
+      };
+    };
+  } catch (error: any) {
+    throw new Error(error.message);
+  };
+};
