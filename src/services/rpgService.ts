@@ -46,7 +46,7 @@ export const updateUserCoinService = async (uuid: string, coinStr: string) => {
         data: { coin: updateCoinStr },
       });
 
-      return { coin: updateCoin };
+      return { coin: updateCoinStr };
     }
     } catch (error: any) {
     throw new Error(error.message);
@@ -84,7 +84,7 @@ export const getItemService = async (uuid: string, item: string, coinStr: string
       });
 
       return { 
-        coin: updateCoin,
+        coin: updateCoinStr,
         item: item,
         result: "アイテムを購入しました"
       };
@@ -93,6 +93,58 @@ export const getItemService = async (uuid: string, item: string, coinStr: string
         result: "コインが不足しているためアイテムを購入できませんでした"
       };
     };
+  } catch (error: any) {
+    throw new Error(error.message);
+  };
+};
+
+export const getUserPositionService = async (uuid: string) => {
+  try {
+    const position = await prisma.users.findUnique({
+      where: { user_id: uuid },
+      select: {
+        position_x: true,
+        position_y: true,
+      },
+    });
+
+    return position
+  } catch(error: any) {
+    throw new Error(error.message);
+  };
+};
+
+export const updateUserPositionService = async (uuid: string, positionXStr: string, positionYStr: string) => {
+  try {
+    const user = await prisma.users.findUnique({
+      where: { user_id: uuid },
+      select: {
+        position_x: true,
+        position_y: true,
+      },
+    });
+
+    if (user && user.position_x !== null && user.position_y !== null) {
+      const updatePositionX = parseInt(user.position_x, 10) + parseInt(positionXStr, 10);
+      const updatePositionY = parseInt(user.position_y, 10) + parseInt(positionYStr, 10);
+
+      const updatePositionXStr = updatePositionX.toString();
+      const updatePositionYStr = updatePositionY.toString();
+
+      await prisma.users.update({
+        where: { user_id: uuid },
+        data: {
+          position_x: updatePositionXStr,
+          position_y: updatePositionYStr,
+        },
+      });
+
+      return {
+        positionX: updatePositionXStr,
+        positionY: updatePositionYStr,
+      };
+    };
+    
   } catch (error: any) {
     throw new Error(error.message);
   };

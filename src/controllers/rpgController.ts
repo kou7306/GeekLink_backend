@@ -4,6 +4,8 @@ import {
   updateUserCoinService,
   getUserItemsService,
   getItemService,
+  getUserPositionService,
+  updateUserPositionService,
 } from "../services/rpgService";
 
 export const getUserCoin = async (req: Request, res: Response) => {
@@ -46,6 +48,29 @@ export const getItem = async (req: Request, res: Response) => {
     const result = await getItemService(uuid, item, coin);
 
     res.json(result);
+  } catch(error) {
+    res.status(500).json({ error: "Internal Server Error", details: error });
+  };
+};
+
+export const getUserPosition = async (req: Request, res: Response) => {
+  try {
+    const uuid = req.params.uuid;
+    const position = await getUserPositionService(uuid);
+
+    res.json(position);
+  } catch(error) {
+    res.status(500).json({ error: "Internal Server Error", details: error });
+  };
+};
+ 
+export const updateUserPosition = async (req: Request, res: Response) => {
+  try {
+    const uuid = req.params.uuid;
+    const { positionX, positionY } = req.body
+    const result = await updateUserPositionService(uuid, positionX, positionY);
+
+    res.json(result)
   } catch(error) {
     res.status(500).json({ error: "Internal Server Error", details: error });
   };
