@@ -4,8 +4,23 @@ import {
   getFilterUsers,
   getMutualFollowUsersService,
   getMessagesAndRoomService,
+  getUserDataService,
 } from "../services/userService";
 import { getLatestMessages } from "../services/messageService";
+
+export const getUserData = async (req: Request, res: Response) => {
+  const { uuid } = req.query as { uuid: string };
+  try {
+    const user = await getUserDataService(uuid);
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 export const getMutualFollowUsers = async (req: Request, res: Response) => {
   const { uuid } = req.body;

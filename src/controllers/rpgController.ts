@@ -14,21 +14,21 @@ export const getUserCoin = async (req: Request, res: Response) => {
     const coin = await getUserCoinService(uuid);
 
     res.json(coin);
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({ error: "Internal Server Error", details: error });
-  };
+  }
 };
- 
+
 export const updateUserCoin = async (req: Request, res: Response) => {
   try {
     const uuid = req.params.uuid;
-    const { coin } = req.body
+    const { coin } = req.body;
     const result = await updateUserCoinService(uuid, coin);
 
-    res.json(result)
-  } catch(error) {
+    res.json(result);
+  } catch (error) {
     res.status(500).json({ error: "Internal Server Error", details: error });
-  };
+  }
 };
 
 export const getUserItems = async (req: Request, res: Response) => {
@@ -37,20 +37,21 @@ export const getUserItems = async (req: Request, res: Response) => {
     const items = await getUserItemsService(uuid);
 
     res.json(items);
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({ error: "Internal Server Error", details: error });
-  };
-}
+  }
+};
 
 export const getItem = async (req: Request, res: Response) => {
   try {
     const { uuid, item, coin } = req.body;
+    console.log(uuid, item, coin);
     const result = await getItemService(uuid, item, coin);
-
+    console.log(result);
     res.json(result);
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({ error: "Internal Server Error", details: error });
-  };
+  }
 };
 
 export const getUserPosition = async (req: Request, res: Response) => {
@@ -59,19 +60,19 @@ export const getUserPosition = async (req: Request, res: Response) => {
     const position = await getUserPositionService(uuid);
 
     res.json(position);
-  } catch(error) {
+  } catch (error) {
     res.status(500).json({ error: "Internal Server Error", details: error });
-  };
+  }
 };
- 
+
 export const updateUserPosition = async (req: Request, res: Response) => {
   try {
     const uuid = req.params.uuid;
-    const { positionX, positionY } = req.body
+    const { positionX, positionY } = req.body;
     const result = await updateUserPositionService(uuid, positionX, positionY);
 
-    res.json(result)
-  } catch(error) {
+    res.json(result);
+  } catch (error) {
     res.status(500).json({ error: "Internal Server Error", details: error });
-  };
+  }
 };
