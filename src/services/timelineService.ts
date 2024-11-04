@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { Post, Reaction } from "../models/timelineModel"; // 型定義は適宜修正してください
+import { Post } from "../models/timelineModel"; // 型定義は適宜修正してください
 
 const prisma = new PrismaClient();
 

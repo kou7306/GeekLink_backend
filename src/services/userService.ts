@@ -1,8 +1,5 @@
 import prisma from "../config/prisma";
-import { users, Message, Match } from "@prisma/client";
-// import { User } from "../models/userModel";
-// import { Match } from "../models/matchModel";
-// import { Message } from "../models/messageModel";
+import { users, Message, follows } from "@prisma/client";
 
 
 export const getUserDataService = async (
@@ -19,25 +16,31 @@ export const getUserDataService = async (
 };
 
 
-export const getMatchingUsersService = async (
+export const getMutualFollowUsersService = async (
   uuid: string
 ): Promise<users[]> => {
-  // MatchテーブルからマッチしたユーザーのIDを取得
-  const matches = await prisma.match.findMany({
+  const following = await prisma.follows.findMany({
     where: {
-      OR: [{ user1_id: uuid }, { user2_id: uuid }],
+      follower_id: uuid,
     },
   });
 
-  const matchedUserIds = matches.flatMap((match: Match) =>
-    match.user1_id === uuid ? match.user2_id : match.user1_id
-  );
+  const followers = await prisma.follows.findMany({
+    where: {
+      followee_id: uuid,
+    },
+  });
+
+  // 相互フォローのユーザーIDを取得
+  const followingIds = following.map(follow => follow.followee_id);
+  const followerIds = followers.map(follow => follow.follower_id);
+  const mutualFollowIds = followingIds.filter(id => followerIds.includes(id));
 
   // Userテーブルからマッチしたユーザーの情報を取得
   const matchedUsers: users[] = await prisma.users.findMany({
     where: {
       user_id: {
-        in: matchedUserIds,
+        in: mutualFollowIds,
       },
     },
   });
@@ -82,7 +85,9 @@ export const checkUserExistsService = async (user_id: string): Promise<boolean> 
     },
   });
 
-  return !!user;
+  // nameの初期値をEMPTYに設定しているため,
+  // 初期登録ができていても名前の変更がまだ(プロフィールの設定がこれから)の場合はfalse
+  return !!user && user.name !== "";
 };
 
 // 出身地を引数に取り、その出身地のユーザーを取得する関数

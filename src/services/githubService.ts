@@ -10,7 +10,6 @@ import {
 import {
   repositoryResponse,
   contributionResponse,
-  MonthContribution,
   activityResponse,
 } from "../types/githubInterface";
 
@@ -99,6 +98,12 @@ export const getUserGithubInfo = async (uuid: string) => {
   }
 
   const { github, github_access_token } = user;
+  if (github == null || github_access_token == null) {
+    return {
+      username: null,
+      token: null,
+    };
+  };
 
   return {
     username: github,

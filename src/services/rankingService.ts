@@ -17,8 +17,8 @@ const getTopRankingNames = async (topRanking: any[]) => {
       });
       return {
         ...ranking,
-        name: user?.name || 'Unknown',
-        image: user?.image_url || '/img/default_icon.png'
+        name: user?.name || "Unknown",
+        image: user?.image_url || ""
       };
     })
   );

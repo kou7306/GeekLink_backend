@@ -47,6 +47,9 @@ model users {
   next_level_points   String?
   life                String?   @default("5")
   coin                String?   @default("0")
+  items               String[]
+  position_x          String?   @default("0")
+  position_y          String?   @default("0")
   Event               Event[]
 
   @@schema("public")

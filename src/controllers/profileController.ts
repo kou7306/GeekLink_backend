@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import {
   getProfileService,
   updateProfileService,
-  LikeStatusCheck,
+  followStatusCheck,
 } from "../services/profileService";
 
 export const updateProfile = async (req: Request, res: Response) => {
@@ -33,15 +33,15 @@ export const getProfile = async (req: Request, res: Response) => {
   }
 };
 
-export const LikeStatus = async (req: Request, res: Response) => {
+export const followStatus = async (req: Request, res: Response) => {
   try {
     const { myID, uuid } = req.body;
-    const likeStatus = await LikeStatusCheck(myID, uuid);
+    const followStatus = await followStatusCheck(myID, uuid);
     res
       .status(200)
-      .json({ message: "likeStatus check successfully", data: likeStatus });
+      .json({ message: "followStatus check successfully", data: followStatus });
   } catch (error) {
-    console.error("Error check likeStatus", error);
+    console.error("Error check followStatus", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
