@@ -22,6 +22,7 @@ export const getPostService = async (
     id: post.post_id,
     userId: post.user_id || "",
     user_name: post.user_name || "",
+    user_image: post.user_image || "",
     title: post.title || "",
     time: post.time || "",
     comment: post.comment || "",
@@ -50,6 +51,7 @@ export const createPostService = async (
     },
     select: {
       name: true,
+      image_url: true,
     },
   });
 
@@ -57,6 +59,7 @@ export const createPostService = async (
     data: {
       user_id: userId,
       user_name: user?.name,
+      user_image: user?.image_url,
       title: title,
       time: time,
       comment: comment,
@@ -67,6 +70,7 @@ export const createPostService = async (
     id: newPost.post_id,
     userId: newPost.user_id || "",
     user_name: newPost.user_name || "",
+    user_image: newPost.user_image || "",
     title: newPost.title || "",
     time: newPost.time || "",
     comment: newPost.comment || "",
@@ -118,6 +122,7 @@ export const addReactionService = async (
     id: updatedPost.post_id,
     userId: updatedPost.user_id || "",
     user_name: updatedPost.user_name || "",
+    user_image: updatedPost.user_image || "",
     title: updatedPost.title || "",
     time: updatedPost.time || "",
     comment: updatedPost.comment || "",
