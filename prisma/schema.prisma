@@ -50,6 +50,10 @@ model users {
   items               String[]
   position_x          String?   @default("0")
   position_y          String?   @default("0")
+  last_login_date     DateTime? @db.Date
+  login_streak        String?
+  monthly_login_count String?
+  total_login_count   String?
   Event               Event[]
 
   @@schema("public")

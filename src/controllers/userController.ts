@@ -5,6 +5,7 @@ import {
   getMutualFollowUsersService,
   getMessagesAndRoomService,
   getUserDataService,
+  loginBonusService,
 } from "../services/userService";
 import { getLatestMessages } from "../services/messageService";
 
@@ -94,6 +95,20 @@ export const getLatestMessage = async (req: Request, res: Response) => {
       res.status(200).json({ message: latestMessage });
     } else {
       res.status(404).json({ error: "No message found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getLoginBonus = async (req: Request, res: Response) => {
+  const { uuid } = req.query as { uuid: string };
+  try {
+    const response = await loginBonusService(uuid);
+    if (response) {
+      res.status(200).json(response);
+    } else {
+      res.status(404).json({ error: "response not found" });
     }
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
