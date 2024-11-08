@@ -55,6 +55,9 @@ model users {
   monthly_login_count String?
   total_login_count   String?
   current_avatar      String?
+  online              Boolean?  @default(false)
+  motivation          String?
+  start_work_time     DateTime? @db.Timestamptz(6)
   Event               Event[]
 
   @@schema("public")
