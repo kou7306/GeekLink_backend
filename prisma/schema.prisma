@@ -54,6 +54,10 @@ model users {
   login_streak        String?
   monthly_login_count String?
   total_login_count   String?
+  current_avatar      String?
+  online              Boolean?  @default(false)
+  motivation          String?
+  start_work_time     DateTime? @db.Timestamptz(6)
   Event               Event[]
 
   @@schema("public")
@@ -547,6 +551,7 @@ model Timeline {
   time             String?
   comment          String?
   user_name        String?
+  user_image       String?            @default("")
   TimelineReaction TimelineReaction[]
 
   @@index([user_id], map: "idx_timeline_user_id")

@@ -6,6 +6,8 @@ import {
   getMessagesAndRoomService,
   getUserDataService,
   loginBonusService,
+  updateWorkStatusService,
+  getOnlineUsersService,
 } from "../services/userService";
 import { getLatestMessages } from "../services/messageService";
 
@@ -105,6 +107,33 @@ export const getLoginBonus = async (req: Request, res: Response) => {
   const { uuid } = req.query as { uuid: string };
   try {
     const response = await loginBonusService(uuid);
+    if (response) {
+      res.status(200).json(response);
+    } else {
+      res.status(404).json({ error: "response not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const updateWorkStatus = async (req: Request, res: Response) => {
+  const { uuid, motivation } = req.body as { uuid: string; motivation: string };
+  try {
+    const response = await updateWorkStatusService(uuid, motivation);
+    if (response) {
+      res.status(200).json(response);
+    } else {
+      res.status(404).json({ error: "response not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getOnlineUsers = async (req: Request, res: Response) => {
+  try {
+    const response = await getOnlineUsersService();
     if (response) {
       res.status(200).json(response);
     } else {
