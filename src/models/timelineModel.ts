@@ -12,6 +12,7 @@ export interface Post {
   id: string; // 投稿のID
   userId: string; // 投稿を作成したユーザーのID
   user_name: string; // 投稿を作成したユーザーの名前
+  user_image: string; // 投稿を作成したユーザーのアイコン
   title: string; // 投稿のタイトル
   time: string; // やった時間
   comment: string; // 投稿の内容
