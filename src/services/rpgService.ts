@@ -66,35 +66,64 @@ export const getUserItemsService = async (uuid: string) => {
   }
 };
 
-export const getItemService = async (
-  uuid: string,
-  item: string,
-  coinStr: string
-) => {
+export const getItemService = async (uuid: string, item: string) => {
+  try {
+    await prisma.users.update({
+      where: { user_id: uuid },
+      data: {
+        items: {
+          push: item,
+        },
+      },
+    });
+
+    return {
+      item: item,
+      message: "アイテムを取得しました" 
+    }
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+export const getUserCostumesService = async (uuid: string) => {
+  try {
+    const costumes = await prisma.users.findUnique({
+      where: { user_id: uuid },
+      select: { costumes: true },
+    });
+
+    return costumes;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+export const getCostumeService = async (uuid: string, costume: string, coinStr: string) => {
   try {
     const updateCoin = await coinCalculation(uuid, coinStr);
 
     if (updateCoin !== undefined && updateCoin >= 0) {
       const updateCoinStr = updateCoin.toString();
-      console.log(updateCoinStr);
+
       await prisma.users.update({
         where: { user_id: uuid },
         data: {
           coin: updateCoinStr,
-          items: {
-            push: item,
+          costumes: {
+            push: costume,
           },
         },
       });
 
       return {
         coin: updateCoinStr,
-        item: item,
-        result: "アイテムを購入しました",
+        costume: costume,
+        result: "着せ替えを購入しました",
       };
     } else if (updateCoin !== undefined && updateCoin < 0) {
       return {
-        result: "コインが不足しているためアイテムを購入できませんでした",
+        result: "コインが不足しているため着せ替えを購入できませんでした",
       };
     }
   } catch (error: any) {

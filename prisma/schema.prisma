@@ -58,6 +58,7 @@ model users {
   online              Boolean?  @default(false)
   motivation          String?
   start_work_time     DateTime? @db.Timestamptz(6)
+  costumes            String[]
   Event               Event[]
 
   @@schema("public")
