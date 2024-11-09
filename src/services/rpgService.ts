@@ -90,7 +90,7 @@ export const getUserCostumesService = async (uuid: string) => {
   try {
     const costumes = await prisma.users.findUnique({
       where: { user_id: uuid },
-      select: { costumes: true },
+      select: { items: true },
     });
 
     return costumes;
@@ -101,6 +101,19 @@ export const getUserCostumesService = async (uuid: string) => {
 
 export const getCostumeService = async (uuid: string, costume: string, coinStr: string) => {
   try {
+    // 現在のユーザー情報を取得
+    const user = await prisma.users.findUnique({
+      where: { user_id: uuid },
+      select: { items: true },
+    });
+
+    // アイテムの重複チェック
+    if (user?.items?.includes(costume)) {
+      return {
+        result: "すでに所持しているアイテムです",
+      };
+    }
+
     const updateCoin = await coinCalculation(uuid, coinStr);
 
     if (updateCoin !== undefined && updateCoin >= 0) {
@@ -110,7 +123,7 @@ export const getCostumeService = async (uuid: string, costume: string, coinStr: 
         where: { user_id: uuid },
         data: {
           coin: updateCoinStr,
-          costumes: {
+          items: {
             push: costume,
           },
         },
@@ -162,10 +175,8 @@ export const updateUserPositionService = async (
     });
 
     if (user && user.position_x !== null && user.position_y !== null) {
-      const updatePositionX =
-        parseInt(user.position_x, 10) + parseInt(positionXStr, 10);
-      const updatePositionY =
-        parseInt(user.position_y, 10) + parseInt(positionYStr, 10);
+      const updatePositionX = parseInt(user.position_x, 10) + parseInt(positionXStr, 10);
+      const updatePositionY = parseInt(user.position_y, 10) + parseInt(positionYStr, 10);
 
       const updatePositionXStr = updatePositionX.toString();
       const updatePositionYStr = updatePositionY.toString();

@@ -18,12 +18,10 @@ import rankingRoutes from "./routes/rankingRoutes";
 import lifeRoutes from "./routes/lifeRoutes";
 import followRoutes from "./routes/followRoutes";
 import rpgRoutes from "./routes/rpgRoutes";
+import avatarRoutes from "./routes/avatarRoutes";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
-import {
-  chatSocketConnection,
-  groupChatSocketConnection,
-} from "./controllers/wsController";
+import { chatSocketConnection, groupChatSocketConnection } from "./controllers/wsController";
 
 dotenv.config();
 
@@ -69,6 +67,7 @@ app.use("/ranking", rankingRoutes);
 app.use("/life", lifeRoutes);
 app.use("/follow", followRoutes);
 app.use("/rpg", rpgRoutes);
+app.use("/avatar", avatarRoutes);
 io.of("/ws/chat").on("connection", chatSocketConnection);
 io.of("/ws/group-chat").on("connection", groupChatSocketConnection);
 
