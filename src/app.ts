@@ -21,7 +21,11 @@ import rpgRoutes from "./routes/rpgRoutes";
 import avatarRoutes from "./routes/avatarRoutes";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
-import { chatSocketConnection, groupChatSocketConnection } from "./controllers/wsController";
+import {
+  chatSocketConnection,
+  groupChatSocketConnection,
+  onlineWorkSocketConnection,
+} from "./controllers/wsController";
 
 dotenv.config();
 
@@ -70,5 +74,6 @@ app.use("/rpg", rpgRoutes);
 app.use("/avatar", avatarRoutes);
 io.of("/ws/chat").on("connection", chatSocketConnection);
 io.of("/ws/group-chat").on("connection", groupChatSocketConnection);
+io.of("/ws/online-users").on("connection", onlineWorkSocketConnection);
 
 export { app, server, io };
