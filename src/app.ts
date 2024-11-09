@@ -23,6 +23,7 @@ import { Server as SocketIOServer } from "socket.io";
 import {
   chatSocketConnection,
   groupChatSocketConnection,
+  onlineWorkSocketConnection,
 } from "./controllers/wsController";
 
 dotenv.config();
@@ -71,5 +72,6 @@ app.use("/follow", followRoutes);
 app.use("/rpg", rpgRoutes);
 io.of("/ws/chat").on("connection", chatSocketConnection);
 io.of("/ws/group-chat").on("connection", groupChatSocketConnection);
+io.of("/ws/online-users").on("connection", onlineWorkSocketConnection);
 
 export { app, server, io };

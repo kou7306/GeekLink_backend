@@ -9,7 +9,7 @@ export type User = {
   top_teches: string[];
   teches: string[];
   hobby?: string;
-  occupation?: string;
+  occupation: string;
   affiliation?: string;
   qualification: string[];
   editor?: string;
@@ -19,7 +19,7 @@ export type User = {
   zenn?: string;
   atcoder?: string;
   message?: string;
-  updated_at: Date;
+  updated_at?: Date;
   portfolio?: string;
   graduate?: string;
   desired_occupation?: string;
@@ -28,9 +28,23 @@ export type User = {
   image_url?: string;
   qiita_access_token?: string;
   github_access_token?: string;
+  github_username?: string;
   rank?: string;
   level?: string;
   next_level_points?: string;
+  life?: string;
+  coin?: string;
+  items: string[];
+  position_x?: string;
+  position_y?: string;
+  last_login_date?: Date;
+  login_streak?: string;
+  monthly_login_count?: string;
+  total_login_count?: string;
+  current_avatar?: string;
+  online: boolean;
+  motivation?: string;
+  start_work_time?: Date;
 };
 
 export type TopUserResponse = {

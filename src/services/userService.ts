@@ -1,5 +1,6 @@
 import prisma from "../config/prisma";
 import { users, Message, follows } from "@prisma/client";
+import { io } from "../app";
 
 export const getUserDataService = async (
   user_id: string
@@ -350,6 +351,22 @@ export const updateWorkStatusService = async (
       start_work_time: !user.online ? new Date() : null, // `online`が`true`になる時は現在時刻を設定し、`false`になる時は`null`にする
     },
   });
+
+  // オンラインユーザーの更新
+  if (updatedUser.online) {
+    // ユーザーがオンラインの場合、`userAdded`イベントを送信
+    io.of("/ws/online-users").emit("userAdded", {
+      userId: updatedUser.user_id,
+      imageUrl: updatedUser.image_url,
+      startWorkTime: updatedUser.start_work_time,
+      motivation: updatedUser.motivation,
+    });
+  } else {
+    // ユーザーがオフラインの場合、`userRemoved`イベントを送信
+    io.of("/ws/online-users").emit("userRemoved", {
+      userId: updatedUser.user_id,
+    });
+  }
 
   return updatedUser;
 };
