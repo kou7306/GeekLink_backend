@@ -1,5 +1,6 @@
 import prisma from "../config/prisma";
 import { Event } from "../models/eventModel";
+import { createGroupService } from "./groupService";
 
 export const createEventService = async (
   eventData: Omit<Event, "id" | "created_at" | "updated_at">
@@ -11,6 +12,16 @@ export const createEventService = async (
         participant_ids: [],
       },
     });
+
+    const groupData = {
+      owner_id: eventData.owner_id,
+      member_ids: [eventData.owner_id],
+      name: eventData.title,
+      description: eventData.purpose,
+    };
+
+    await createGroupService(groupData)
+
     return event;
   } catch (error) {
     console.error("Error creating event:", error);
@@ -71,6 +82,8 @@ export const joinEventService = async (eventId: string, userId: string): Promise
     if (event.participant_ids.length >= event.max_participants) {
       throw new Error("Event is already full");
     }
+
+    
 
     const updatedEvent = await prisma.event.update({
       where: { id: eventId },
