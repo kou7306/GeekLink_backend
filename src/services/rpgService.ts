@@ -90,7 +90,7 @@ export const getUserCostumesService = async (uuid: string) => {
   try {
     const costumes = await prisma.users.findUnique({
       where: { user_id: uuid },
-      select: { costumes: true },
+      select: { items: true },
     });
 
     return costumes;
@@ -108,7 +108,7 @@ export const getCostumeService = async (uuid: string, costume: string, coinStr: 
     });
 
     // アイテムの重複チェック
-    if (user?.items?.includes(item)) {
+    if (user?.items?.includes(costume)) {
       return {
         result: "すでに所持しているアイテムです",
       };
@@ -123,7 +123,7 @@ export const getCostumeService = async (uuid: string, costume: string, coinStr: 
         where: { user_id: uuid },
         data: {
           coin: updateCoinStr,
-          costumes: {
+          items: {
             push: costume,
           },
         },
