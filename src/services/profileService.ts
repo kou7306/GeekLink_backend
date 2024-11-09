@@ -25,6 +25,7 @@ export const getProfileService = async (
       where: { user_id: user_id },
     });
 
+    console.log("user", user);
     return user;
   } catch (error: any) {
     throw new Error(error.message);

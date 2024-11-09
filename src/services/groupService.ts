@@ -83,3 +83,13 @@ export const getGroupListService = async (): Promise<UserGroups[]> => {
 
   return group;
 };
+
+export const deleteGroupService = async (groupId: string) => {
+  try {
+    await prisma.userGroups.delete({
+      where: { id: groupId },
+    });
+  } catch (error) {
+    throw new Error("Failed to delete group");
+  }
+};
