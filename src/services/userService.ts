@@ -1,7 +1,6 @@
 import prisma from "../config/prisma";
 import { users, Message, follows } from "@prisma/client";
 
-
 export const getUserDataService = async (
   user_id: string
 ): Promise<users | null> => {
@@ -14,7 +13,6 @@ export const getUserDataService = async (
 
   return user || null;
 };
-
 
 export const getMutualFollowUsersService = async (
   uuid: string
@@ -32,9 +30,9 @@ export const getMutualFollowUsersService = async (
   });
 
   // 相互フォローのユーザーIDを取得
-  const followingIds = following.map(follow => follow.followee_id);
-  const followerIds = followers.map(follow => follow.follower_id);
-  const mutualFollowIds = followingIds.filter(id => followerIds.includes(id));
+  const followingIds = following.map((follow) => follow.followee_id);
+  const followerIds = followers.map((follow) => follow.follower_id);
+  const mutualFollowIds = followingIds.filter((id) => followerIds.includes(id));
 
   // Userテーブルからマッチしたユーザーの情報を取得
   const matchedUsers: users[] = await prisma.users.findMany({
@@ -77,7 +75,9 @@ export const getMessagesAndRoomService = async (
   return { roomId, messages };
 };
 
-export const checkUserExistsService = async (user_id: string): Promise<boolean> => {
+export const checkUserExistsService = async (
+  user_id: string
+): Promise<boolean> => {
   // 特定のユーザーIDが存在するかを確認
   const user = await prisma.users.findUnique({
     where: {
@@ -192,9 +192,19 @@ interface FilterUsersParams {
 }
 
 // ユーザーの絞り込み検索を行う関数
-export const getFilterUsers = async (params: FilterUsersParams): Promise<users[]> => {
-  const { places, ages, hobby, top_teches, occupations, graduate, desired_occupation, experience } =
-    params;
+export const getFilterUsers = async (
+  params: FilterUsersParams
+): Promise<users[]> => {
+  const {
+    places,
+    ages,
+    hobby,
+    top_teches,
+    occupations,
+    graduate,
+    desired_occupation,
+    experience,
+  } = params;
 
   const filters: any = {};
 
@@ -233,4 +243,122 @@ export const getFilterUsers = async (params: FilterUsersParams): Promise<users[]
     console.error("Error in getFilterUsers:", error);
     throw new Error("Failed to fetch users");
   }
+};
+
+export const loginBonusService = async (uuid: string) => {
+  try {
+    const user = await prisma.users.findUnique({
+      where: {
+        user_id: uuid,
+      },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // if (lastLoginDate !== todayISO) {
+    const newLoginCount = (parseInt(user.total_login_count ?? "0") || 0) + 1;
+    let newLifeAmount = parseInt(user.life ?? "0") || 0;
+
+    const consecutiveLoginCount = parseInt(user.login_streak ?? "0") + 1;
+    let coinsToAdd = 0;
+    let lifeToAdd = 0;
+
+    if (consecutiveLoginCount % 20 === 0) {
+      coinsToAdd = 500;
+    } else if (consecutiveLoginCount % 5 === 0) {
+      coinsToAdd = 100;
+    }
+
+    // ライフの追加ロジック
+    if (consecutiveLoginCount % 5 !== 0) {
+      if (consecutiveLoginCount >= 1 && consecutiveLoginCount <= 4) {
+        lifeToAdd = 1;
+      } else if (consecutiveLoginCount >= 6 && consecutiveLoginCount <= 9) {
+        lifeToAdd = 1;
+      } else if (consecutiveLoginCount >= 10 && consecutiveLoginCount <= 14) {
+        lifeToAdd = 2;
+      } else if (consecutiveLoginCount >= 16 && consecutiveLoginCount <= 19) {
+        lifeToAdd = 2;
+      } else if (consecutiveLoginCount >= 20) {
+        lifeToAdd = 3;
+      }
+    }
+
+    newLifeAmount += lifeToAdd;
+
+    const userData = await prisma.users.update({
+      where: {
+        user_id: uuid,
+      },
+      data: {
+        life: newLifeAmount.toString(),
+        last_login_date: new Date(),
+        total_login_count: newLoginCount.toString(),
+        login_streak: consecutiveLoginCount.toString(),
+        coin: (parseInt(user.coin ?? "0") + coinsToAdd).toString(),
+      },
+    });
+
+    // 更新情報を構築
+    const response: {
+      success: boolean;
+      userData: typeof userData;
+      updated: string[];
+      lifeAdded?: number;
+      coinsAdded?: number;
+    } = { success: true, userData, updated: [] };
+
+    if (lifeToAdd > 0) {
+      response.updated.push("life");
+      response.lifeAdded = lifeToAdd; // 獲得したライフを追加
+    }
+    if (coinsToAdd > 0) {
+      response.updated.push("coin");
+      response.coinsAdded = coinsToAdd; // 獲得したコインを追加
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Error granting login bonus:", error);
+    throw new Error("Failed to grant login bonus");
+  }
+};
+
+export const updateWorkStatusService = async (
+  uuid: string,
+  motivation: string
+) => {
+  // 現在の`online`ステータスを取得
+  const user = await prisma.users.findUnique({
+    where: { user_id: uuid },
+    select: { online: true },
+  });
+
+  // `online`ステータスが存在しない場合、関数を終了
+  if (user === null) {
+    throw new Error("User not found");
+  }
+
+  // `online`フィールドの値を反転して更新
+  const updatedUser = await prisma.users.update({
+    where: { user_id: uuid },
+    data: {
+      online: !user.online,
+      motivation: !user.online ? motivation : "", // `online`が`true`になる時はmotivationを設定し、`false`になる時は空にする
+      start_work_time: !user.online ? new Date() : null, // `online`が`true`になる時は現在時刻を設定し、`false`になる時は`null`にする
+    },
+  });
+
+  return updatedUser;
+};
+
+export const getOnlineUsersService = async () => {
+  const onlineUsers = await prisma.users.findMany({
+    where: {
+      online: true,
+    },
+  });
+  return onlineUsers;
 };

@@ -117,10 +117,10 @@ export const getAllRankingService = async () => {
   }
 }
 
-// トップ画面用にデイリーコントリビューション数ランキング上位5人を取得
+// トップ画面用にデイリーアクティビティランキング上位5人を取得
 export const getTopRankingService = async () => {
   try {
-    const topRanking = await prisma.dailyGithubContributionRanking.findMany({
+    const topRanking = await prisma.dailyGeekLinkActivity.findMany({
       where: {rank: {lte: 5}},
       orderBy: {rank: 'asc'},
     });
