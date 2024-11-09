@@ -1,6 +1,6 @@
 import prisma from "../config/prisma";
 import { Event } from "../models/eventModel";
-import { createGroupService } from "./groupService";
+import { createGroupService, addGroupMemberService, deleteGroupService } from "./groupService";
 
 export const createEventService = async (
   eventData: Omit<Event, "id" | "created_at" | "updated_at">
@@ -43,6 +43,25 @@ export const getEventByIdService = async (eventId: string): Promise<Event | null
 
 export const deleteEventService = async (eventId: string): Promise<void> => {
   try {
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+    });
+
+    if (!event) {
+      throw new Error("Event not found");
+    }
+
+    const group = await prisma.userGroups.findFirst({
+      where: {
+        name: event.title,
+        description: event.purpose,
+      },
+    });
+
+    if (group){
+      await deleteGroupService(group.id);
+    }
+
     await prisma.event.delete({
       where: { id: eventId },
     });
@@ -83,8 +102,17 @@ export const joinEventService = async (eventId: string, userId: string): Promise
       throw new Error("Event is already full");
     }
 
-    
+    const group = await prisma.userGroups.findFirst({
+      where: {
+        name: event.title,
+        description: event.purpose,
+      },
+    });
 
+    if (group){
+      await addGroupMemberService(group.id, userId);
+    }
+    
     const updatedEvent = await prisma.event.update({
       where: { id: eventId },
       data: {
