@@ -1,6 +1,10 @@
 import prisma from "../config/prisma";
 import { Event } from "../models/eventModel";
-import { createGroupService, addGroupMemberService, deleteGroupService } from "./groupService";
+import {
+  createGroupService,
+  addGroupMemberService,
+  deleteGroupService,
+} from "./groupService";
 
 export const createEventService = async (
   eventData: Omit<Event, "id" | "created_at" | "updated_at">
@@ -20,7 +24,7 @@ export const createEventService = async (
       description: eventData.purpose,
     };
 
-    await createGroupService(groupData)
+    await createGroupService(groupData);
 
     return event;
   } catch (error) {
@@ -29,7 +33,9 @@ export const createEventService = async (
   }
 };
 
-export const getEventByIdService = async (eventId: string): Promise<Event | null> => {
+export const getEventByIdService = async (
+  eventId: string
+): Promise<Event | null> => {
   try {
     const event = await prisma.event.findUnique({
       where: { id: eventId },
@@ -58,7 +64,7 @@ export const deleteEventService = async (eventId: string): Promise<void> => {
       },
     });
 
-    if (group){
+    if (group) {
       await deleteGroupService(group.id);
     }
 
@@ -71,7 +77,10 @@ export const deleteEventService = async (eventId: string): Promise<void> => {
   }
 };
 
-export const updateEventService = async (eventId: string, eventData: Partial<Event>): Promise<Event> => {
+export const updateEventService = async (
+  eventId: string,
+  eventData: Partial<Event>
+): Promise<Event> => {
   try {
     const updatedEvent = await prisma.event.update({
       where: { id: eventId },
@@ -84,7 +93,10 @@ export const updateEventService = async (eventId: string, eventData: Partial<Eve
   }
 };
 
-export const joinEventService = async (eventId: string, userId: string): Promise<Event> => {
+export const joinEventService = async (
+  eventId: string,
+  userId: string
+): Promise<Event> => {
   try {
     const event = await prisma.event.findUnique({
       where: { id: eventId },
@@ -109,10 +121,10 @@ export const joinEventService = async (eventId: string, userId: string): Promise
       },
     });
 
-    if (group){
+    if (group) {
       await addGroupMemberService(group.id, userId);
     }
-    
+
     const updatedEvent = await prisma.event.update({
       where: { id: eventId },
       data: {
@@ -138,7 +150,10 @@ export const getAllEventsService = async () => {
   }
 };
 
-export const leaveEventService = async (eventId: string, userId: string): Promise<Event> => {
+export const leaveEventService = async (
+  eventId: string,
+  userId: string
+): Promise<Event> => {
   try {
     const event = await prisma.event.findUnique({ where: { id: eventId } });
     if (!event) throw new Error("Event not found");
@@ -147,7 +162,9 @@ export const leaveEventService = async (eventId: string, userId: string): Promis
 
     return await prisma.event.update({
       where: { id: eventId },
-      data: { participant_ids: event.participant_ids.filter((id) => id !== userId) },
+      data: {
+        participant_ids: event.participant_ids.filter((id) => id !== userId),
+      },
     });
   } catch (error) {
     console.error("Error leaving event:", error);
@@ -159,6 +176,24 @@ export const searchEventsByTitleService = async (title: string) => {
   try {
     return await prisma.event.findMany({
       where: { title: { contains: title, mode: "insensitive" } },
+    });
+  } catch (error) {
+    console.error("Error searching events:", error);
+    throw error;
+  }
+};
+
+export const searchEventsByKeywordService = async (keyword: string) => {
+  try {
+    return await prisma.event.findMany({
+      where: {
+        OR: [
+          { title: { contains: keyword, mode: "insensitive" } },
+          { purpose: { contains: keyword, mode: "insensitive" } },
+          { requirements: { contains: keyword, mode: "insensitive" } },
+          { techs: { has: keyword } },
+        ],
+      },
     });
   } catch (error) {
     console.error("Error searching events:", error);
