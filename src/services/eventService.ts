@@ -201,6 +201,17 @@ export const searchEventsByKeywordService = async (keyword: string) => {
   }
 };
 
+export const sortEventsService = async (sort: string, order: string) => {
+  try {
+    return await prisma.event.findMany({
+      orderBy: { [sort]: order },
+    });
+  } catch (error) {
+    console.error("Error sorting events:", error);
+    throw error;
+  }
+};
+
 export const getEventsByOwnerService = async (ownerId: string) => {
   try {
     return await prisma.event.findMany({ where: { owner_id: ownerId } });

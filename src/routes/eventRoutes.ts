@@ -11,6 +11,7 @@ import {
   getEventsByOwner,
   getEventsByType,
   searchEventsByKeyword,
+  sortEvents,
 } from "../controllers/eventController";
 
 const router = Router();
@@ -19,6 +20,7 @@ router.post("/", createEvent);
 router.get("/", getAllEvents);
 router.get("/search", searchEventsByTitle);
 router.get("/search/:keyword", searchEventsByKeyword);
+router.get("/sort/:sort/:order", sortEvents);
 router.get("/owner/:ownerId", getEventsByOwner);
 router.get("/:id", getEventById);
 router.delete("/:id", deleteEvent);
