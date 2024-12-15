@@ -11,6 +11,7 @@ import {
   getEventsByOwnerService,
   getEventsByTypeService,
   searchEventsByKeywordService,
+  sortEventsService,
 } from "../services/eventService";
 import { Event } from "../models/eventModel";
 
@@ -127,6 +128,18 @@ export const searchEventsByKeyword = async (req: Request, res: Response) => {
     res.status(200).json(events);
   } catch (error) {
     console.error("Error in searchEventsByKeyword:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const sortEvents = async (req: Request, res: Response) => {
+  try {
+    const sort = req.params.sort;
+    const order = req.params.order;
+    const events = await sortEventsService(sort, order);
+    res.status(200).json(events);
+  } catch (error) {
+    console.error("Error in sortEvents:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
