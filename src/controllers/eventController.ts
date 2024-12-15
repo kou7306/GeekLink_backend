@@ -10,6 +10,7 @@ import {
   searchEventsByTitleService,
   getEventsByOwnerService,
   getEventsByTypeService,
+  searchEventsByKeywordService,
 } from "../services/eventService";
 import { Event } from "../models/eventModel";
 
@@ -119,6 +120,17 @@ export const searchEventsByTitle = async (req: Request, res: Response) => {
   }
 };
 
+export const searchEventsByKeyword = async (req: Request, res: Response) => {
+  try {
+    const keyword = req.params.keyword;
+    const events = await searchEventsByKeywordService(keyword);
+    res.status(200).json(events);
+  } catch (error) {
+    console.error("Error in searchEventsByKeyword:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const getEventsByOwner = async (req: Request, res: Response) => {
   try {
     const ownerId = req.params.ownerId;
@@ -134,7 +146,9 @@ export const getEventsByType = async (req: Request, res: Response) => {
   try {
     const eventType = req.params.type.toUpperCase();
     if (eventType !== "EVENT" && eventType !== "HACKATHON") {
-      return res.status(400).json({ error: "Invalid event type. Must be 'EVENT' or 'HACKATHON'." });
+      return res
+        .status(400)
+        .json({ error: "Invalid event type. Must be 'EVENT' or 'HACKATHON'." });
     }
     const events = await getEventsByTypeService(eventType);
     res.status(200).json(events);
