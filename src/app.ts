@@ -44,8 +44,8 @@ io.on("connection", (socket) => {
 });
 // CORSの設定
 const corsOptions = {
-  origin: "*",
-  methods: ["*"],
+  origin: ["https://giiku5-frontend.vercel.app", "http://localhost:3000"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
 };
 
