@@ -46,7 +46,12 @@ io.on("connection", (socket) => {
 const corsOptions = {
   origin: ["https://giiku5-frontend.vercel.app", "http://localhost:3000"],
   methods: ["*"],
-  allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Cache-Control",
+    "XMLHttpRequest",
+  ],
   exposedHeaders: ["Access-Control-Allow-Origin"],
   credentials: true,
 };
